@@ -474,7 +474,7 @@ chest-xray-pneumonia-detection/
 
 ## 📞 **Contact & Collaboration**
 
-**Ayushi Rathour** - *Medical AI Developer*
+**Ayushi Rathour** - *Biotechnology Graduate | Exploring AI in Healthcare*
 - **GitHub:** [@ayushirathour](https://github.com/ayushirathour)
 - **LinkedIn:** [Ayushi Rathour](https://linkedin.com/in/ayushi-rathour)
 - **Email:** ayushirathour1804@gmail.com
