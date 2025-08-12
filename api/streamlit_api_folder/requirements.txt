@@ -1,4 +1,6 @@
-numpy
-pillow
-tensorflow
 streamlit
+tensorflow
+pillow
+numpy
+opencv-python
+matplotlib
