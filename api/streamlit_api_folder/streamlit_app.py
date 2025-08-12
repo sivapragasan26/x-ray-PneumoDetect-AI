@@ -1,5 +1,3 @@
-# streamlit_app.py
-
 import streamlit as st
 from PIL import Image
 import numpy as np
@@ -144,9 +142,9 @@ MODEL_SPECS = {
 # -----------------------------
 # STREAMLIT UI
 # -----------------------------
-st.set_page_config(page_title="PneumoDetect AI", page_icon="🫁", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="🫁 PneumoDetect AI", page_icon="🫁", layout="wide", initial_sidebar_state="collapsed")
 
-# CSS: full-screen fixed gradient background + glassmorphism + responsiveness
+# Custom gradient background and styling - Python/Streamlit friendly
 st.markdown(
     """
     <style>
@@ -157,17 +155,12 @@ st.markdown(
         color: #e6eef8;
     }
 
-    /* Full-screen background layer so Streamlit elements sit above it */
-    .bg-aurora {
-        position: fixed;
-        inset: 0;
-        z-index: -999;
+    /* Full-screen gradient background with animation */
+    .stApp {
         background: linear-gradient(135deg, #0c1c44, #1e3a8a, #0a1238, #4ade80);
         background-size: 400% 400%;
         animation: gradientAnimation 15s ease infinite;
-        filter: blur(20px) saturate(0.9);
-        opacity: 0.95;
-        pointer-events: none;
+        min-height: 100vh;
     }
 
     @keyframes gradientAnimation {
@@ -175,6 +168,7 @@ st.markdown(
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
+    
     @keyframes float {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
@@ -187,118 +181,190 @@ st.markdown(
         padding: 36px 20px;
     }
 
-    /* Header */
+    /* Header with floating animation */
     .hero {
         text-align: center;
-        margin-bottom: 22px;
+        margin-bottom: 40px;
     }
-    .hero-emoji { font-size: 56px; animation: float 3s ease-in-out infinite; }
-    .hero-title { font-size: 34px; font-weight: 700; margin: 8px 0; color: #ffffff; }
-    .hero-sub { color: rgba(230,238,248,0.85); font-size: 16px; margin-bottom: 8px; }
-    .dev-badge { display:inline-block; padding:8px 14px; border-radius:999px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.03); color: rgba(230,238,248,0.95); font-weight:600; }
+    .hero-emoji { 
+        font-size: 64px; 
+        animation: float 3s ease-in-out infinite; 
+        display: block;
+        margin-bottom: 20px;
+    }
+    .hero-title { 
+        font-size: 48px; 
+        font-weight: 800; 
+        margin: 16px 0; 
+        color: #ffffff; 
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    }
+    .hero-sub { 
+        color: rgba(230,238,248,0.9); 
+        font-size: 20px; 
+        margin-bottom: 16px; 
+        font-weight: 500;
+    }
+    .hero-tagline {
+        color: rgba(230,238,248,0.85);
+        font-size: 18px;
+        font-weight: 600;
+        font-style: italic;
+        margin-top: 12px;
+    }
 
-    /* Stats grid */
+    /* Stats grid with emojis */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-        margin-top: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin: 40px 0;
     }
     .stat-card {
-        background: rgba(255,255,255,0.03);
-        border-radius: 12px;
-        padding: 22px;
-        backdrop-filter: blur(6px);
-        border:1px solid rgba(255,255,255,0.04);
-        box-shadow: 0 10px 30px rgba(2,6,23,0.45);
-        transition: transform .18s ease, box-shadow .18s ease;
+        background: rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 30px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 15px 35px rgba(2,6,23,0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
     }
-    .stat-card:hover { transform: translateY(-6px); box-shadow: 0 18px 42px rgba(2,6,23,0.6); }
-    .stat-value { font-size: 28px; font-weight: 800; color: #fff; margin:0; }
-    .stat-label { color: rgba(230,238,248,0.8); margin-top:8px; font-size:13px; text-transform:uppercase; letter-spacing:1px; }
+    .stat-card:hover { 
+        transform: translateY(-8px); 
+        box-shadow: 0 25px 50px rgba(2,6,23,0.4); 
+    }
+    .stat-value { 
+        font-size: 36px; 
+        font-weight: 900; 
+        color: #fff; 
+        margin: 0;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .stat-label { 
+        color: rgba(230,238,248,0.8); 
+        margin-top: 12px; 
+        font-size: 16px; 
+        text-transform: uppercase; 
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
 
-    /* Upload area: removed drag-drop box requirements. Use simple decorated area. */
-    .upload-area {
-        margin-top: 28px;
-        display:flex;
-        justify-content:center;
+    /* Upload section styling */
+    .upload-section {
+        margin: 40px 0;
+        text-align: center;
     }
-    .upload-card {
-        width:100%;
-        max-width:900px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.04);
-        padding: 22px;
-        text-align:center;
-        backdrop-filter: blur(5px);
-        box-shadow: 0 12px 36px rgba(2,6,23,0.45);
+    .upload-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
-    .upload-title { font-size: 18px; font-weight:700; color:#ffffff; }
-    .upload-sub { margin-top:6px; color: rgba(230,238,248,0.8); font-size:14px; }
 
-    /* Preview card */
-    .preview-card {
-        margin-top: 18px;
-        max-width: 1000px;
-        border-radius: 12px;
-        overflow:hidden;
-        border: 1px solid rgba(255,255,255,0.05);
-        background: rgba(255,255,255,0.02);
-        box-shadow: 0 12px 36px rgba(2,6,23,0.45);
+    /* File uploader styling */
+    .stFileUploader {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        margin: 20px auto;
+        max-width: 600px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        border: 2px dashed rgba(255,255,255,0.3);
+        padding: 20px;
+        transition: all 0.3s ease;
     }
-    .preview-caption {
-        padding:12px;
-        text-align:center;
-        color: rgba(230,238,248,0.9);
-        background: rgba(255,255,255,0.01);
+    .stFileUploader:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        border-color: rgba(255,255,255,0.5);
     }
-    .preview-img { width:100%; height:auto; display:block; }
 
-    /* Button */
-    .analyze-btn {
-        display:block;
-        width:100%;
-        max-width:420px;
-        margin: 18px auto 0;
-        padding: 12px 18px;
-        border-radius: 10px;
-        border: none;
-        background: linear-gradient(90deg,#1981ff,#2ac2d8);
+    /* Button styling - responsive and centered */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea, #764ba2);
         color: white;
-        font-weight:700;
-        box-shadow: 0 10px 26px rgba(26,115,255,0.16);
-        cursor:pointer;
-        transition: transform .12s ease, box-shadow .12s ease;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 18px;
+        box-shadow: 0 10px 25px rgba(102,126,234,0.3);
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
-    .analyze-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgba(26,115,255,0.22); }
+    .stButton > button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(102,126,234,0.5);
+        background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    }
 
-    /* Result */
-    .result-block { margin-top:18px; }
-    .result-panel { border-radius:10px; padding:18px; }
-    .result-title { font-weight:800; font-size:20px; margin-bottom:6px; color:#fff; }
-    .result-confidence { font-size:26px; font-weight:900; margin:6px 0; color:#fff; }
-    .result-reco { color: rgba(230,238,248,0.95); margin-top:6px; }
+    /* Social icons styling */
+    .social-section {
+        text-align: center;
+        margin: 50px 0 30px 0;
+    }
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin: 20px 0;
+    }
+    .social-icon {
+        font-size: 32px;
+        color: rgba(255,255,255,0.8);
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    .social-icon:hover {
+        color: #4ade80;
+        transform: translateY(-5px);
+    }
 
-    .tech-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-top:12px; }
-    .tech-card { background: rgba(255,255,255,0.02); padding:12px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.03); }
-    .tech-label { color: rgba(230,238,248,0.8); font-size:13px; }
-    .tech-value { color:#fff; font-weight:700; margin-top:6px; }
+    /* Disclaimer box */
+    .disclaimer-box {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 15px;
+        padding: 25px;
+        margin: 40px auto;
+        max-width: 800px;
+        color: rgba(255,255,255,0.9);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .disclaimer-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 15px;
+    }
 
-    /* Footer */
-    .footer { margin-top:28px; text-align:center; color: rgba(230,238,248,0.78); font-size:14px; }
-    .footer a { color: rgba(172,216,255,0.95); text-decoration:none; }
+    /* Footer styling - kept simple */
+    .footer {
+        text-align: center;
+        margin-top: 60px;
+        padding: 30px;
+        color: rgba(230,238,248,0.7);
+        font-size: 16px;
+        font-weight: 500;
+    }
 
-    /* Responsive */
-    @media (max-width: 920px) {
-        .stats-grid { grid-template-columns: 1fr; }
-        .tech-grid { grid-template-columns: 1fr; }
-        .hero-title { font-size: 24px; }
-        .hero-emoji { font-size:44px; }
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .stats-grid { grid-template-columns: 1fr; gap: 16px; }
+        .hero-title { font-size: 36px; }
+        .hero-emoji { font-size: 48px; }
+        .social-icons { gap: 20px; }
+        .social-icon { font-size: 28px; }
     }
     </style>
-
-    <div class="bg-aurora"></div>
     """,
     unsafe_allow_html=True,
 )
@@ -306,33 +372,33 @@ st.markdown(
 # App content wrapper
 st.markdown('<div class="app-container">', unsafe_allow_html=True)
 
-# Header / hero
+# Header / hero section with emojis
 st.markdown(
     """
     <div class="hero">
         <div class="hero-emoji">🫁</div>
         <div class="hero-title">PneumoDetect AI</div>
-        <div class="hero-sub">Advanced Chest X-Ray Analysis for Pneumonia Detection</div>
-        <div class="dev-badge">Developed by Ayushi Rathour — Biotechnology Graduate</div>
+        <div class="hero-sub">Advanced Chest X-Ray Analysis | Clinical-Grade Artificial Intelligence</div>
+        <div class="hero-tagline">⚡ Fast. Accurate. Reliable. AI-powered pneumonia detection in just 2.5 seconds.</div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-# Stats (three)
+# Stats grid with emojis
 st.markdown(
     f"""
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-value">{int(MODEL_SPECS['accuracy'])}%</div>
+            <div class="stat-value">🎯 {int(MODEL_SPECS['accuracy'])}%</div>
             <div class="stat-label">Model Accuracy</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">{MODEL_SPECS['sensitivity']}%</div>
+            <div class="stat-value">🔍 {MODEL_SPECS['sensitivity']}%</div>
             <div class="stat-label">Sensitivity Rate</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">{MODEL_SPECS['avg_prediction_time']}</div>
+            <div class="stat-value">⏱ {MODEL_SPECS['avg_prediction_time']}</div>
             <div class="stat-label">Average Prediction Time</div>
         </div>
     </div>
@@ -340,133 +406,119 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Upload area (no drag-and-drop box)
+# Upload section with emojis
 st.markdown(
     """
-    <div class="upload-area">
-      <div class="upload-card">
-        <div class="upload-title">Upload Chest X-Ray Image</div>
-        <div class="upload-sub">Supported formats: JPG, PNG, JPEG • Max {mb}MB</div>
-        <div style="height:6px;"></div>
-    """.format(mb=MODEL_SPECS["max_file_size_mb"]),
+    <div class="upload-section">
+        <div class="upload-title">📤 Upload Chest X-Ray for Instant AI Analysis</div>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
-# Streamlit file uploader (regular) - placed inside the styled card
+# File uploader - FIXED: use_container_width instead of use_column_width
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
-
-# Close upload card container (will be reopened when previewing)
-st.markdown("</div></div>", unsafe_allow_html=True)
 
 # If file uploaded: preview & analyze
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
     except Exception:
-        st.error("Unable to open image. Please upload a valid JPG/PNG file.")
+        st.error("⚠️ Unable to open image. Please upload a valid JPG/PNG file.")
         image = None
 
     if image is not None:
-        # Preview card
-        bio = io.BytesIO()
-        image.save(bio, format="PNG")
-        img_bytes = bio.getvalue()
+        # Preview with FIXED parameter
+        st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True, output_format='PNG')
 
-        st.markdown('<div class="preview-card">', unsafe_allow_html=True)
-        st.image(img_bytes, use_column_width=True, output_format='PNG')
-        st.markdown('<div class="preview-caption">Uploaded Chest X-Ray</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Analyze button
-        analyze = st.button("Analyze X-Ray", key="analyze_btn")
+        # Analyze button - responsive and centered using columns
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
+            
         if analyze:
-            # Spinner while model loads & predicts. No model path info on UI.
-            with st.spinner("Analyzing — please wait..."):
+            # Spinner while model loads & predicts
+            with st.spinner("🧠 Analyzing image, please wait..."):
                 t0 = time.time()
-                model = load_pneumonia_model()  # cached resource
+                model = load_pneumonia_model()
                 prediction_data = predict_pneumonia(image, model)
                 elapsed = time.time() - t0
 
             if not prediction_data["success"]:
-                st.error(f"Prediction failed: {prediction_data['error']}")
+                st.error(f"❌ Prediction failed: {prediction_data['error']}")
             else:
                 res = prediction_data["result"]
 
-                # Render result card
+                # Render result with emojis
                 if res["diagnosis"] == "PNEUMONIA":
-                    # red-accent result
-                    st.markdown(
-                        f"""
-                        <div class="result-block">
-                            <div class="result-panel" style="border-left:4px solid rgba(255,90,90,0.95); background: linear-gradient(90deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));">
-                                <div class="result-title" style="color: #ffb6b6;">Pneumonia Detected</div>
-                                <div class="result-confidence">{res['confidence']}% ({res['confidence_level']})</div>
-                                <div class="result-reco">{res['recommendation']}</div>
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                    st.error(f"""
+                    🩺 **Diagnosis Result: Pneumonia Detected**
+                    
+                    **Confidence:** {res['confidence']}% ({res['confidence_level']} level)
+                    
+                    **Recommendation:** {res['recommendation']}
+                    """)
                 else:
-                    # green-accent result
-                    st.markdown(
-                        f"""
-                        <div class="result-block">
-                            <div class="result-panel" style="border-left:4px solid rgba(106,230,141,0.9); background: linear-gradient(90deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));">
-                                <div class="result-title" style="color: #9ff3b3;">Normal Chest X-Ray</div>
-                                <div class="result-confidence">{res['confidence']}% ({res['confidence_level']})</div>
-                                <div class="result-reco">{res['recommendation']}</div>
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                    st.success(f"""
+                    ✅ **Diagnosis Result: Normal Chest X-Ray**
+                    
+                    **Confidence:** {res['confidence']}% ({res['confidence_level']} level)
+                    
+                    **Recommendation:** {res['recommendation']}
+                    """)
 
-                # technical analysis
-                st.markdown(
-                    f"""
-                    <div class="glass" style="margin-top:12px;">
-                        <div style="font-weight:700; color: rgba(230,238,248,0.95);">Technical Analysis</div>
-                        <div class="tech-grid">
-                            <div class="tech-card"><div class="tech-label">Raw Score</div><div class="tech-value">{res['raw_score']:.4f}</div></div>
-                            <div class="tech-card"><div class="tech-label">Threshold</div><div class="tech-value">{res['threshold']}</div></div>
-                            <div class="tech-card"><div class="tech-label">Architecture</div><div class="tech-value">{res['model_architecture']}</div></div>
-                        </div>
-                        <div style="margin-top:10px; color: rgba(230,238,248,0.78); font-size:0.92rem;">
-                            ⏱ Prediction Time: {elapsed:.2f} sec
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                # Technical analysis
+                st.info(f"""
+                📊 **Technical Analysis:**
+                - Model Architecture: {res['model_architecture']}
+                - Raw Score: {res['raw_score']:.4f}
+                - Threshold: {res['threshold']}
+                - ⏱ Prediction Time: {elapsed:.2f} sec
+                """)
 
-# If no file, show hint card
-else:
-    st.markdown(
-        """
-        <div style="margin-top:18px;">
-            <div class="glass" style="padding:16px; text-align:center; max-width:820px; margin-left:auto; margin-right:auto;">
-                <div style="font-weight:700; color: rgba(230,238,248,0.95);">Ready to analyze a chest X-ray?</div>
-                <div style="color: rgba(230,238,248,0.78); margin-top:6px;">Upload a supported image to start. The model runs on the server and you'll see results here.</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# Footer with updated GitHub link
+# Social media icons section
 st.markdown(
-    f"""
-    <div class="footer">
-        <div style="font-weight:700; color: #fff; margin-bottom:6px;">Medical Disclaimer</div>
-        <div>This AI tool is for preliminary screening only. Consult a healthcare professional for medical advice.</div>
-        <div style="margin-top:10px;">For model details and source code, visit <a href="https://github.com/ayushirathour/chest-xray-pneumonia-detection-ai" target="_blank">GitHub</a></div>
-        <div style="margin-top:10px; font-weight:600;">Developed by {MODEL_SPECS['developer']}</div>
-        <div style="margin-top:6px;">© 2025 PneumoDetect AI</div>
+    """
+    <div class="social-section">
+        <div class="social-icons">
+            <a href="https://github.com/ayushirathour" target="_blank" class="social-icon" title="GitHub">
+                🐙
+            </a>
+            <a href="https://huggingface.co/ayushirathour" target="_blank" class="social-icon" title="Hugging Face">
+                🤗
+            </a>
+            <a href="mailto:ayushirathour1804@gmail.com" class="social-icon" title="Gmail">
+                📧
+            </a>
+            <a href="https://www.linkedin.com/in/ayushirathour" target="_blank" class="social-icon" title="LinkedIn">
+                💼
+            </a>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-# close container
+# Disclaimer in box - content unchanged
+st.markdown(
+    """
+    <div class="disclaimer-box">
+        <div class="disclaimer-title">⚠️ Medical Disclaimer</div>
+        <p>This AI tool is intended for preliminary screening purposes only. Always seek advice from qualified healthcare professionals before making medical decisions.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Footer - kept simple as requested, removed developer line
+st.markdown(
+    f"""
+    <div class="footer">
+        <strong>{MODEL_SPECS['name']} {MODEL_SPECS['version']}</strong> | © 2025 {MODEL_SPECS['developer']}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Close container
 st.markdown("</div>", unsafe_allow_html=True)
