@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(300deg,#211c6a,#17594a,#08045b,#264422,#b7b73d);
+            background: linear-gradient(300deg, #211c6a, #17594a, #08045b, #264422, #b7b73d);
             background-size: 300% 300%;
             animation: gradient-animation 25s ease infinite;
             min-height: 100vh;
@@ -613,7 +613,7 @@
             
             <div class="image-preview" id="imagePreview" style="display: none;">
                 <img id="previewImg" class="preview-image" alt="Uploaded X-Ray">
-                <p style="margin-top: 15px; color: #666; font-weight: 600;">📸 Uploaded Chest X-Ray - Ready for AI Analysis</p>
+                <p style="margin-top: 15px; color: white; font-weight: 600;">📸 Uploaded Chest X-Ray - Ready for AI Analysis</p>
             </div>
 
             <button class="analyze-btn" id="analyzeBtn" disabled>🔬 Analyze X-ray with AI</button>
@@ -655,7 +655,7 @@
     </div>
 
     <script>
-        // H5 MODEL BACKEND API CONFIGURATION - YOUR EXISTING LOGIC
+        // H5 MODEL BACKEND API CONFIGURATION
         const API_CONFIG = {
             endpoints: [
                 '/api/predict',
@@ -668,7 +668,7 @@
             maxFileSize: 200 * 1024 * 1024
         };
 
-        // YOUR EXISTING H5 MODEL PREDICTION FUNCTION
+        // H5 MODEL PREDICTION FUNCTION
         async function predictWithH5Model(imageFile) {
             const formData = new FormData();
             formData.append('image', imageFile);
@@ -680,7 +680,7 @@
                     const response = await fetch(endpoint, {
                         method: 'POST',
                         body: formData,
-                        timeout: API_CONFIG.timeout
+                        signal: AbortSignal.timeout(API_CONFIG.timeout)
                     });
 
                     if (!response.ok) {
@@ -700,7 +700,7 @@
             throw new Error('All API endpoints failed. Please check server connection.');
         }
 
-        // YOUR EXISTING PREDICTION INTERPRETATION LOGIC
+        // PREDICTION INTERPRETATION LOGIC
         function interpretPrediction(apiResponse) {
             let predictionScore;
             
@@ -811,7 +811,7 @@
             reader.readAsDataURL(file);
         }
 
-        // YOUR EXISTING H5 MODEL ANALYSIS LOGIC
+        // H5 MODEL ANALYSIS LOGIC
         analyzeBtn.addEventListener('click', async () => {
             if (!uploadedFile) {
                 alert('Please upload an image first');
@@ -835,7 +835,7 @@
             analyzeBtn.disabled = false;
         });
 
-        // COMPLETED displayResults FUNCTION
+        // DISPLAY RESULTS FUNCTION
         function displayResults(result, prediction) {
             const isPneumonia = result.diagnosis === 'PNEUMONIA';
             const resultClass = isPneumonia ? 'results-pneumonia' : 'results-normal';
