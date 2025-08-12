@@ -6,9 +6,9 @@ import os
 
 @st.cache_resource
 def load_model():
-    """Load your trained pneumonia detection model"""
+    """Load your trained pneumonia detection model - Silent Loading"""
     
-    # Multiple possible paths to try (YOUR WORKING LOGIC - UNCHANGED)
+    # Multiple possible paths to try
     possible_paths = [
         'best_chest_xray_model.h5',
         './best_chest_xray_model.h5',
@@ -19,18 +19,11 @@ def load_model():
     for model_path in possible_paths:
         try:
             if os.path.exists(model_path):
-                st.info(f"✅ Found model at: {model_path}")
                 model = tf.keras.models.load_model(model_path, compile=False)
                 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-                st.success("✅ Trained model loaded successfully")
                 return model
         except Exception as e:
-            st.warning(f"❌ Failed to load from {model_path}: {e}")
             continue
-    
-    st.error("❌ Model file not found in any expected location")
-    st.write(f"🔍 Current working directory: {os.getcwd()}")
-    st.write(f"🔍 Files in current directory: {os.listdir('.')}")
     
     return None
 
@@ -198,7 +191,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# PREMIUM CSS WITH ACETERNITY-STYLE GRADIENT BACKGROUND
+# YOUR NEW GRADIENT BACKGROUND + PREMIUM CSS
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -212,40 +205,18 @@ st.markdown("""
         display: none !important;
     }
     
-    /* Full screen animated gradient background - Aceternity style */
+    /* YOUR NEW GRADIENT BACKGROUND */
     .main, .stApp {
-        background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
-        background-size: 400% 400%;
-        animation: gradientShift 15s ease infinite;
+        background: linear-gradient(300deg, #211c6a, #17594a, #08045b, #264422, #b7b73d);
+        background-size: 300% 300%;
+        animation: gradient-animation 25s ease infinite;
         min-height: 100vh;
     }
     
-    @keyframes gradientShift {
+    @keyframes gradient-animation {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
-    }
-    
-    /* Floating particles effect */
-    .main::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(255,255,255,0.05) 0%, transparent 50%);
-        animation: particleFloat 20s ease-in-out infinite;
-        pointer-events: none;
-        z-index: -1;
-    }
-    
-    @keyframes particleFloat {
-        0%, 100% { opacity: 0.3; transform: translateY(0px); }
-        50% { opacity: 0.6; transform: translateY(-20px); }
     }
     
     /* Remove default Streamlit padding */
@@ -361,8 +332,8 @@ st.markdown("""
         z-index: 2;
     }
     
-    /* Upload container */
-    .upload-container {
+    /* SINGLE UNIFIED UPLOAD CONTAINER */
+    .unified-upload-container {
         background: rgba(255,255,255,0.95);
         backdrop-filter: blur(20px);
         padding: 2rem;
@@ -371,24 +342,31 @@ st.markdown("""
         max-width: 800px;
         box-shadow: 0 20px 50px rgba(0,0,0,0.15);
         border: 3px dashed #3498db;
+        text-align: center;
+        transition: all 0.3s ease;
     }
     
-    .upload-container:hover {
+    .unified-upload-container:hover {
         border-color: #2980b9;
         transform: translateY(-5px);
         box-shadow: 0 25px 60px rgba(0,0,0,0.2);
     }
     
-    /* Image preview container */
-    .image-preview {
-        background: rgba(255,255,255,0.98);
-        backdrop-filter: blur(20px);
-        padding: 25px;
-        border-radius: 25px;
-        margin: 25px auto;
-        max-width: 600px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        border: 2px solid rgba(52,152,219,0.3);
+    /* File uploader styling */
+    .stFileUploader > div {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+    
+    .stFileUploader > div > div {
+        border: none !important;
+        background: transparent !important;
+        padding: 1rem !important;
+    }
+    
+    .stFileUploader > label {
+        display: none !important;
     }
     
     /* Animation keyframes */
@@ -439,11 +417,6 @@ st.markdown("""
         box-shadow: 0 15px 35px rgba(52,152,219,0.5);
     }
     
-    /* Hide file uploader label */
-    .stFileUploader > label {
-        display: none;
-    }
-    
     /* Responsive design */
     @media (max-width: 768px) {
         .main-title { font-size: 3rem; }
@@ -488,36 +461,33 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# LOAD MODEL
+# LOAD MODEL (SILENT - NO CONFIRMATION MESSAGES)
 model = load_model()
 
 if model is not None:
-    # UPLOAD SECTION WITH PROPER BORDER
+    # SINGLE UNIFIED DRAG & DROP CONTAINER
     st.markdown("""
-    <div class='upload-container'>
-        <h2 style='text-align: center; color: #2c3e50; margin-bottom: 1rem; font-weight: 700;'>
-            📤 Upload Chest X-Ray for AI Analysis
+    <div class='unified-upload-container'>
+        <h2 style='color: #2c3e50; margin-bottom: 1rem; font-weight: 700;'>
+            📤 Drag and drop file here
         </h2>
-        <p style='text-align: center; color: #7f8c8d; font-size: 1.1rem; margin-bottom: 1rem;'>
-            Supported formats: JPG, PNG, JPEG | Maximum file size: 200MB
+        <p style='color: #7f8c8d; font-size: 1.1rem; margin-bottom: 1rem;'>
+            Limit 200MB per file • JPG, PNG, JPEG
         </p>
-    </div>
     """, unsafe_allow_html=True)
     
     uploaded_file = st.file_uploader(
-        "Select chest X-ray image", 
+        "", 
         type=['jpg', 'png', 'jpeg'],
         help="Upload a chest X-ray image for AI-powered pneumonia detection"
     )
-
+    
+    # If file is uploaded, show preview in same container
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-
-        # IMAGE PREVIEW WITH PROPER CONTAINER
-        st.markdown("""<div class='image-preview'>""", unsafe_allow_html=True)
+        st.markdown("<hr style='margin: 2rem 0; border: 1px solid #ddd;'>", unsafe_allow_html=True)
         st.image(image, caption="📸 Uploaded Chest X-Ray - Ready for AI Analysis", use_column_width=True)
-        st.markdown("""</div>""", unsafe_allow_html=True)
-
+        
         # ANALYZE BUTTON
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
@@ -528,8 +498,10 @@ if model is not None:
                     result = interpret_prediction(prediction)
 
                 display_premium_results(result, prediction, image)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # FOOTER WITH PROPER HTML RENDERING
+    # CLEAN FOOTER SECTION
     st.markdown("""
     <div style='
         background: linear-gradient(145deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95));
@@ -550,39 +522,12 @@ if model is not None:
             </p>
         </div>
         
-        <div style='border-top: 2px solid rgba(255,255,255,0.2); padding-top: 2rem;'>
-            <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: left;'>
-                <div style='background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 15px;'>
-                    <h4 style='color: #74b9ff; margin-bottom: 1rem;'>👩‍💻 Developer</h4>
-                    <p style='margin: 0; font-size: 1.1rem; font-weight: 700;'><strong>Ayushi Rathour</strong></p>
-                    <p style='margin: 5px 0; color: #ddd;'>Biotechnology Graduate</p>
-                    <p style='margin: 5px 0; color: #ddd;'>Exploring AI in Healthcare</p>
-                    <p style='margin: 10px 0; color: #74b9ff; font-weight: 600;'>🚀 Bridging Biology & Technology</p>
-                </div>
-                
-                <div style='background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 15px;'>
-                    <h4 style='color: #55dd88; margin-bottom: 1rem;'>🔬 Technical Stack</h4>
-                    <p style='margin: 5px 0;'>• TensorFlow & Deep Learning</p>
-                    <p style='margin: 5px 0;'>• Streamlit & Python</p>
-                    <p style='margin: 5px 0;'>• Computer Vision & CNN</p>
-                    <p style='margin: 5px 0;'>• Medical Image Analysis</p>
-                </div>
-                
-                <div style='background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 15px;'>
-                    <h4 style='color: #ff7675; margin-bottom: 1rem;'>🏥 Healthcare Impact</h4>
-                    <p style='margin: 5px 0;'>• Early Pneumonia Detection</p>
-                    <p style='margin: 5px 0;'>• Clinical Decision Support</p>
-                    <p style='margin: 5px 0;'>• Accessible AI Diagnostics</p>
-                    <p style='margin: 5px 0;'>• Evidence-Based Medicine</p>
-                </div>
-            </div>
-            
-            <div style='text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);'>
-                <p style='color: #bdc3c7; font-size: 1rem; line-height: 1.6;'>
-                    🏥 Developed with ❤️ for Healthcare Innovation | 🔬 Powered by TensorFlow & Streamlit<br>
-                    <strong>PneumoDetect AI v2.0</strong> | © 2024 Ayushi Rathour | Biotechnology × Artificial Intelligence
-                </p>
-            </div>
+        <div style='text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);'>
+            <p style='color: #bdc3c7; font-size: 1rem; line-height: 1.6;'>
+                🏥 Developed with ❤️ for Healthcare Innovation by <strong>Ayushi Rathour</strong><br>
+                🔬 Powered by TensorFlow & Streamlit | Biotechnology × Artificial Intelligence<br>
+                <strong>PneumoDetect AI v2.0</strong> | © 2024
+            </p>
         </div>
     </div>
     """, unsafe_allow_html=True)
