@@ -7,14 +7,35 @@ import os
 @st.cache_resource
 def load_model():
     """Load your trained pneumonia detection model"""
-    try:
-        model = tf.keras.models.load_model('best_chest_xray_model.h5', compile=False)
-        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-        st.success("✅ Trained model loaded successfully (86% accuracy)")
-        return model
-    except Exception as e:
-        st.error(f"Model loading failed: {e}")
-        return None
+    
+    # Multiple possible paths to try
+    possible_paths = [
+        'best_chest_xray_model.h5',
+        './best_chest_xray_model.h5',
+        'api/streamlit_api_folder/best_chest_xray_model.h5',
+        '/mount/src/chest-xray-pneumonia-detection-ai/api/streamlit_api_folder/best_chest_xray_model.h5'
+    ]
+    
+    for model_path in possible_paths:
+        try:
+            if os.path.exists(model_path):
+                st.info(f"✅ Found model at: {model_path}")
+                model = tf.keras.models.load_model(model_path, compile=False)
+                model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+                st.success("✅ Trained model loaded successfully (86% accuracy)")
+                return model
+        except Exception as e:
+            st.warning(f"❌ Failed to load from {model_path}: {e}")
+            continue
+    
+    st.error("❌ Model file not found in any expected location")
+    
+    # Debug info
+    st.write(f"🔍 Current working directory: {os.getcwd()}")
+    st.write(f"🔍 Files in current directory: {os.listdir('.')}")
+    
+    return None
+
 
 def preprocess_image(image):
     """Preprocess image for model prediction"""
@@ -140,3 +161,4 @@ if model is not None:
 
 else:
     st.error("❌ Model failed to load. Please check the model file.")
+
