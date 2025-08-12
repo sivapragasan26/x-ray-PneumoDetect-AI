@@ -144,7 +144,7 @@ MODEL_SPECS = {
 # -----------------------------
 st.set_page_config(page_title="🫁 PneumoDetect AI", page_icon="🫁", layout="wide", initial_sidebar_state="collapsed")
 
-# Complete CSS styling
+# Complete CSS styling with FIXED HEADER added
 st.markdown(
     """
     <style>
@@ -173,10 +173,61 @@ st.markdown(
         50% { transform: translateY(-10px); }
     }
 
+    /* FIXED GLASSMORPHIC HEADER - ADDED */
+    .fixed-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        padding: 0 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        transition: all 0.3s ease;
+    }
+
+    .fixed-header:hover {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
+    }
+
+    .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 24px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .header-brand:hover {
+        transform: scale(1.05);
+        color: #74b9ff;
+    }
+
+    .header-emoji {
+        font-size: 28px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .header-text {
+        font-family: 'Poppins', sans-serif;
+        letter-spacing: -0.5px;
+    }
+
     .app-container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 36px 20px;
+        padding: 106px 20px 36px 20px; /* UPDATED: Added top padding for fixed header */
     }
 
     .hero {
@@ -432,7 +483,21 @@ st.markdown(
         color: #ffffff;
     }
 
+    /* RESPONSIVE DESIGN FOR HEADER - ADDED */
     @media (max-width: 768px) {
+        .fixed-header {
+            padding: 0 20px;
+            height: 60px;
+        }
+        .header-brand {
+            font-size: 20px;
+        }
+        .header-emoji {
+            font-size: 24px;
+        }
+        .app-container {
+            padding-top: 96px; /* Adjusted for smaller header */
+        }
         .stats-grid { grid-template-columns: 1fr; gap: 16px; }
         .hero-title { font-size: 36px; }
         .hero-emoji { font-size: 48px; }
@@ -441,6 +506,19 @@ st.markdown(
         .tech-section, .about-developer { padding: 25px; }
     }
     </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Fixed Glassmorphic Header - ADDED
+st.markdown(
+    """
+    <div class="fixed-header">
+        <a href="#" class="header-brand">
+            <span class="header-emoji">🫁</span>
+            <span class="header-text">PneumoDetect AI</span>
+        </a>
+    </div>
     """,
     unsafe_allow_html=True,
 )
@@ -661,8 +739,3 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
