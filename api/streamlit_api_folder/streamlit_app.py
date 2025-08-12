@@ -595,7 +595,7 @@ st.markdown(
     """
     <div class="upload-section">
         <div class="upload-title">📤 Upload & Analyze Chest X-Ray</div>
-        <div class="upload-subtitle">Max 200MB • JPG/JPEG/PNG • Secure & Private Processing</div>
+        <div class="upload-subtitle">Secure & Private Processing</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -759,6 +759,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
