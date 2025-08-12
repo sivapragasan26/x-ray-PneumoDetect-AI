@@ -352,37 +352,28 @@ st.markdown(
         border-color: rgba(255,255,255,0.5);
     }
 
-   .stButton > button {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 50px;
-    font-weight: 800;
-    font-size: 18px;
-    box-shadow: 0 10px 25px rgba(102,126,234,0.3);
-    transition: all 0.3s ease;
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto !important; 
-    display: block !important; 
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: center; 
-}
-
-.stButton {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-}
-
-.stButton > button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(102,126,234,0.5);
-    background: linear-gradient(135deg, #5a67d8, #6b46c1);
-}
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 18px;
+        box-shadow: 0 10px 25px rgba(102,126,234,0.3);
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .stButton > button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(102,126,234,0.5);
+        background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    }
 
     .tech-section {
         background: rgba(255,255,255,0.05);
@@ -761,6 +752,4 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
-
-
 
