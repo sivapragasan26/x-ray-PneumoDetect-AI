@@ -566,10 +566,10 @@ if uploaded_file is not None:
 # 6. Technology & Methodology
 st.markdown(
     f"""
-    <div class="tech-section">
+    <div class="tech-section" style="text-align: left;">
         <div class="tech-title">🔬 How It Works</div>
-        <div class="tech-description">
-            <ul style="line-height:1.8; padding-left:20px;">
+        <div class="tech-description" style="text-align: left;">
+            <ul style="line-height:1.8; padding-left:20px; margin:0;">
                 <li>Powered by the <strong>MobileNetV2</strong> deep learning architecture</li>
                 <li>Trained on thousands of chest X-ray images for high accuracy</li>
                 <li>Validated on <strong>{MODEL_SPECS['validation_samples']} independent samples</strong></li>
@@ -577,6 +577,7 @@ st.markdown(
                 <li>Delivers AI-powered pneumonia detection in just <strong>2.5 seconds</strong></li>
                 <li>Optimized for real-time clinical screening</li>
             </ul>
+            <br>
             <a href="https://github.com/ayushirathour/chest-xray-pneumonia-detection-ai" target="_blank" style="color: #74b9ff; text-decoration: none;">
                 📂 View Model & Source Code →
             </a>
@@ -660,6 +661,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
