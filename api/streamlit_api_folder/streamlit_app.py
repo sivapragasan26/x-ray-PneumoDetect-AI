@@ -567,7 +567,7 @@ if uploaded_file is not None:
 st.markdown(
     f"""
     <div class="tech-section" style="text-align: left;">
-        <div class="tech-title">🔬 How It Works</div>
+        <div class="tech-title"style="text-align: left;">🔬 How It Works</div>
         <div class="tech-description" style="text-align: left;">
             <ul style="line-height:1.8; padding-left:20px; margin:0;">
                 <li>Powered by the <strong>MobileNetV2</strong> deep learning architecture</li>
@@ -661,6 +661,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
