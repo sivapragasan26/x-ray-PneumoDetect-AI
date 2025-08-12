@@ -569,12 +569,14 @@ st.markdown(
     <div class="tech-section">
         <div class="tech-title">🔬 How It Works</div>
         <div class="tech-description">
-            PneumoDetect AI is powered by the <strong>MobileNetV2</strong> deep learning model, trained on thousands of chest X-ray images. 
-            Validated on <strong>{MODEL_SPECS['validation_samples']} independent samples</strong>, it achieved 
-            <strong>{MODEL_SPECS['accuracy']}% accuracy</strong> and <strong>{MODEL_SPECS['sensitivity']}% sensitivity</strong>. 
-            Optimized for real-time clinical screening, the system delivers AI-powered results in just 
-            <strong>2.5 seconds</strong> — making it a powerful tool for fast, accurate pneumonia detection.
-            <br><br>
+            <ul style="line-height:1.8; padding-left:20px;">
+                <li>Powered by the <strong>MobileNetV2</strong> deep learning architecture</li>
+                <li>Trained on thousands of chest X-ray images for high accuracy</li>
+                <li>Validated on <strong>{MODEL_SPECS['validation_samples']} independent samples</strong></li>
+                <li>Achieved <strong>{MODEL_SPECS['accuracy']}% accuracy</strong> and <strong>{MODEL_SPECS['sensitivity']}% sensitivity</strong></li>
+                <li>Delivers AI-powered pneumonia detection in just <strong>2.5 seconds</strong></li>
+                <li>Optimized for real-time clinical screening</li>
+            </ul>
             <a href="https://github.com/ayushirathour/chest-xray-pneumonia-detection-ai" target="_blank" style="color: #74b9ff; text-decoration: none;">
                 📂 View Model & Source Code →
             </a>
@@ -658,5 +660,6 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
