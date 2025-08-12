@@ -146,7 +146,7 @@ MODEL_SPECS = {
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=wrap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
 
     html, body, [class*="css"] {
         font-family: 'Poppins', sans-serif;
@@ -174,62 +174,69 @@ st.markdown(
     /* FIXED GLASSMORPHIC HEADER - REPOSITIONED BELOW STREAMLIT HEADER */
     .fixed-header {
         position: fixed;
-        top: 48px; /* CHANGED: Position below Streamlit's header */
+        top: 48px;
         left: 0;
         right: 0;
-        height: 85px; /* INCREASED: Taller header */
-        background: rgba(255, 255, 255, 0.12); /* ENHANCED: More visible */
+        height: 85px;
+        background: rgba(255, 255, 255, 0.12);
         backdrop-filter: blur(30px);
         -webkit-backdrop-filter: blur(30px);
-        border-bottom: 2px solid rgba(255, 255, 255, 0.25); /* ENHANCED: Stronger border */
-        z-index: 999; /* CHANGED: Lower z-index than Streamlit */
+        border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+        z-index: 999;
         display: flex;
         align-items: center;
         padding: 0 40px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); /* ENHANCED: Stronger shadow */
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
     }
 
     .fixed-header:hover {
         background: rgba(255, 255, 255, 0.18);
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
-        transform: translateY(-2px); /* ADDED: Subtle lift on hover */
+        transform: translateY(-2px);
     }
 
     .header-brand {
         display: flex;
         align-items: center;
-        gap: 15px; /* INCREASED: More spacing */
+        gap: 0px; /* REMOVED: No gap needed without emoji */
         color: white;
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 28px; /* INCREASED: Larger text */
-        text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4); /* ENHANCED: Stronger shadow */
+        text-decoration: none !important; /* ENHANCED: Force no underline */
+        font-weight: 400; /* CHANGED: From 800 to 400 (normal weight) */
+        font-size: 28px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* REDUCED: Lighter shadow */
         transition: all 0.3s ease;
+        border: none !important; /* ADDED: Remove any borders */
+        outline: none !important; /* ADDED: Remove outline */
     }
 
     .header-brand:hover {
-        transform: scale(1.05);
+        transform: scale(1.03); /* REDUCED: Subtle scale */
         color: #74b9ff;
-        text-shadow: 0 5px 20px rgba(116, 185, 255, 0.3);
+        text-shadow: 0 3px 12px rgba(116, 185, 255, 0.3);
+        text-decoration: none !important; /* ENSURE: No underline on hover */
+    }
+
+    .header-brand:focus, .header-brand:active, .header-brand:visited {
+        text-decoration: none !important; /* ADDED: Remove underline for all states */
+        outline: none !important;
     }
 
     .header-emoji {
-        font-size: 32px; /* INCREASED: Larger emoji */
-        animation: float 3s ease-in-out infinite;
-        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        display: none; /* HIDDEN: Lung icon removed */
     }
 
     .header-text {
         font-family: 'Poppins', sans-serif;
-        letter-spacing: -0.5px;
-        font-weight: 800;
+        letter-spacing: -0.3px; /* REDUCED: Less tight spacing */
+        font-weight: 400; /* CHANGED: Light weight */
+        text-decoration: none !important; /* ADDED: Ensure no underline */
     }
 
     .app-container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 150px 20px 36px 20px; /* UPDATED: Increased top padding for repositioned header */
+        padding: 150px 20px 36px 20px;
     }
 
     /* REST OF YOUR EXISTING CSS REMAINS THE SAME... */
@@ -489,19 +496,20 @@ st.markdown(
     /* RESPONSIVE DESIGN FOR REPOSITIONED HEADER */
     @media (max-width: 768px) {
         .fixed-header {
-            top: 40px; /* ADJUSTED: Different Streamlit header height on mobile */
+            top: 40px;
             padding: 0 20px;
-            height: 75px; /* ADJUSTED: Slightly smaller on mobile */
+            height: 75px;
         }
         .header-brand {
-            font-size: 22px; /* ADJUSTED: Smaller text on mobile */
-            gap: 12px;
+            font-size: 22px; /* KEPT: Same size but lighter weight */
+            gap: 0px; /* NO GAP: No emoji */
+            font-weight: 400; /* CONSISTENT: Light weight on mobile */
         }
         .header-emoji {
-            font-size: 26px; /* ADJUSTED: Smaller emoji on mobile */
+            display: none; /* HIDDEN: No emoji on mobile either */
         }
         .app-container {
-            padding-top: 130px; /* ADJUSTED: Less padding needed on mobile */
+            padding-top: 130px;
         }
         .stats-grid { grid-template-columns: 1fr; gap: 16px; }
         .hero-title { font-size: 36px; }
@@ -516,12 +524,11 @@ st.markdown(
 )
 
 
-# Fixed Glassmorphic Header - ADDED
+# Fixed Glassmorphic Header - UPDATED (Remove emoji)
 st.markdown(
     """
     <div class="fixed-header">
         <a href="#" class="header-brand">
-            <span class="header-emoji">🫁</span>
             <span class="header-text">PneumoDetect AI</span>
         </a>
     </div>
@@ -745,4 +752,5 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
