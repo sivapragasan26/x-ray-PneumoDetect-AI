@@ -7,8 +7,6 @@ import os
 @st.cache_resource
 def load_model():
     """Load your trained pneumonia detection model - Silent Loading"""
-    
-    # Multiple possible paths to try
     possible_paths = [
         'best_chest_xray_model.h5',
         './best_chest_xray_model.h5',
@@ -24,7 +22,6 @@ def load_model():
                 return model
         except Exception as e:
             continue
-    
     return None
 
 def preprocess_image(image):
@@ -112,7 +109,6 @@ def display_premium_results(result, prediction, image):
                     {result['recommendation']}
                 </div>
             </div>
-            <div style='position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%); animation: shimmer 3s infinite;'></div>
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -153,11 +149,10 @@ def display_premium_results(result, prediction, image):
                     {result['recommendation']}
                 </div>
             </div>
-            <div style='position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%); animation: shimmer 3s infinite;'></div>
         </div>
         """, unsafe_allow_html=True)
 
-    # Enhanced Technical Analysis Section
+    # Technical Analysis Section
     st.markdown(f"""
     <div style='
         background: linear-gradient(145deg, #2c3e50, #34495e, #2c3e50);
@@ -170,22 +165,21 @@ def display_premium_results(result, prediction, image):
         border: 3px solid #3498db;
         box-shadow: 0 20px 60px rgba(52,152,219,0.3);
     '>
-        <div style='position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(45deg, transparent 30%, rgba(52,152,219,0.1) 50%, transparent 70%); animation: shimmer 4s infinite;'></div>
         <h3 style='color: #74b9ff; margin-bottom: 30px; font-size: 2rem; text-align: center; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; position: relative; z-index: 2;'>
             🔬 Technical Analysis Dashboard
         </h3>
         <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; position: relative; z-index: 2;'>
-            <div style='background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; text-align: center; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.2); transition: all 0.3s ease;'>
+            <div style='background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid rgba(255,255,255,0.2);'>
                 <h4 style='color: #74b9ff; margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700;'>Raw Score</h4>
-                <p style='color: #fff; font-size: 1.4rem; font-weight: 800; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);'>{prediction:.4f}</p>
+                <p style='color: #fff; font-size: 1.4rem; font-weight: 800;'>{prediction:.4f}</p>
             </div>
-            <div style='background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; text-align: center; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.2); transition: all 0.3s ease;'>
+            <div style='background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid rgba(255,255,255,0.2);'>
                 <h4 style='color: #55a3ff; margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700;'>Threshold</h4>
-                <p style='color: #fff; font-size: 1.4rem; font-weight: 800; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);'>0.5</p>
+                <p style='color: #fff; font-size: 1.4rem; font-weight: 800;'>0.5</p>
             </div>
-            <div style='background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; text-align: center; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.2); transition: all 0.3s ease;'>
+            <div style='background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid rgba(255,255,255,0.2);'>
                 <h4 style='color: #a29bfe; margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700;'>Architecture</h4>
-                <p style='color: #fff; font-size: 1.1rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);'>MobileNetV2</p>
+                <p style='color: #fff; font-size: 1.1rem; font-weight: 700;'>MobileNetV2</p>
             </div>
         </div>
     </div>
@@ -199,13 +193,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Enhanced Premium CSS with Modern Design
+# Your Custom Gradient Background + Enhanced CSS
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
     
     * {
-        font-family: 'Poppins', 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         box-sizing: border-box;
     }
     
@@ -220,20 +214,6 @@ st.markdown("""
         background-size: 300% 300%;
         animation: gradient-animation 25s ease infinite;
         min-height: 100vh;
-        position: relative;
-        overflow-x: hidden;
-    }
-    
-    .main::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        opacity: 0.3;
-        z-index: -1;
     }
     
     @keyframes gradient-animation {
@@ -242,32 +222,18 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
     
-    /* Remove default Streamlit padding */
     .block-container {
         padding-top: 1rem;
         padding-bottom: 1rem;
         max-width: 1400px;
     }
     
-    /* Enhanced Title Section */
+    /* Title Section */
     .title-section {
         text-align: center;
         padding: 4rem 0 3rem 0;
         margin-bottom: 3rem;
         position: relative;
-    }
-    
-    .title-section::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 200px;
-        height: 200px;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: pulse 4s ease-in-out infinite;
     }
     
     .main-title {
@@ -276,21 +242,10 @@ st.markdown("""
         color: white;
         text-shadow: 3px 3px 15px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.3);
         margin-bottom: 1.5rem;
-        animation: titleGlow 3s ease-in-out infinite alternate;
         position: relative;
         z-index: 2;
         letter-spacing: 3px;
         text-transform: uppercase;
-    }
-    
-    @keyframes titleGlow {
-        from { text-shadow: 3px 3px 15px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.3); }
-        to { text-shadow: 3px 3px 25px rgba(0,0,0,0.7), 0 0 50px rgba(255,255,255,0.5); }
-    }
-    
-    @keyframes pulse {
-        0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-        50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
     }
     
     .subtitle {
@@ -313,22 +268,9 @@ st.markdown("""
         font-weight: 700;
         font-size: 1.3rem;
         border: 3px solid rgba(255,255,255,0.4);
-        animation: developerPulse 4s ease-in-out infinite;
         box-shadow: 0 15px 40px rgba(0,0,0,0.3);
         position: relative;
         z-index: 2;
-        transition: all 0.3s ease;
-    }
-    
-    .developer-badge:hover {
-        transform: scale(1.05);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-        border-color: rgba(255,255,255,0.6);
-    }
-    
-    @keyframes developerPulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
     }
     
     /* Enhanced Stats Grid */
@@ -354,25 +296,9 @@ st.markdown("""
         cursor: pointer;
     }
     
-    .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(52,152,219,0.3), transparent);
-        transition: left 0.8s;
-    }
-    
-    .stat-card:hover::before {
-        left: 100%;
-    }
-    
     .stat-card:hover {
         transform: translateY(-15px) scale(1.02);
         box-shadow: 0 35px 80px rgba(0,0,0,0.3);
-        border-color: rgba(52,152,219,0.6);
     }
     
     .stat-number {
@@ -382,10 +308,6 @@ st.markdown("""
         margin: 0;
         position: relative;
         z-index: 2;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
     }
     
     .stat-label {
@@ -399,173 +321,60 @@ st.markdown("""
         letter-spacing: 1px;
     }
     
-    /* Enhanced Upload Container */
-    .enhanced-upload-container {
+    /* WORKING DRAG & DROP STYLING */
+    .stFileUploader {
         background: rgba(255,255,255,0.98);
         backdrop-filter: blur(25px);
         border-radius: 30px;
         margin: 3rem auto;
-        max-width: 1000px;
+        max-width: 800px;
         box-shadow: 0 25px 70px rgba(0,0,0,0.2);
-        border: 3px solid #3498db;
-        overflow: hidden;
+        border: 3px dashed #3498db;
+        padding: 2rem;
         transition: all 0.4s ease;
-        position: relative;
     }
     
-    .enhanced-upload-container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe);
-        animation: rainbow 3s linear infinite;
-    }
-    
-    @keyframes rainbow {
-        0% { background-position: 0% 50%; }
-        100% { background-position: 100% 50%; }
-    }
-    
-    .enhanced-upload-container:hover {
+    .stFileUploader:hover {
         transform: translateY(-8px);
         box-shadow: 0 30px 80px rgba(0,0,0,0.25);
         border-color: #2980b9;
     }
     
-    .upload-header {
-        background: linear-gradient(135deg, #3498db, #2980b9, #1abc9c);
-        color: white;
-        padding: 25px;
+    .stFileUploader > div {
         text-align: center;
-        font-weight: 800;
-        font-size: 1.4rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        position: relative;
-        overflow: hidden;
+        padding: 2rem;
     }
     
-    .upload-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        animation: shimmer 2s infinite;
+    .stFileUploader > div > div {
+        border: none !important;
+        background: transparent !important;
     }
     
-    .upload-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0;
-        min-height: 350px;
+    .stFileUploader label {
+        color: #3498db !important;
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
     }
     
-    .drop-zone {
-        padding: 50px 30px;
-        text-align: center;
-        border-right: 3px solid #e0e0e0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(135deg, rgba(52,152,219,0.05), rgba(26,188,156,0.05));
-        cursor: pointer;
-        transition: all 0.4s ease;
-        position: relative;
-        overflow: hidden;
+    .stFileUploader label::before {
+        content: "🫁 ";
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
     }
     
-    .drop-zone::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent 30%, rgba(52,152,219,0.1) 50%, transparent 70%);
-        transform: translateX(-100%);
-        transition: transform 0.6s ease;
-    }
-    
-    .drop-zone:hover::before {
-        transform: translateX(100%);
-    }
-    
-    .drop-zone:hover {
-        background: linear-gradient(135deg, rgba(52,152,219,0.1), rgba(26,188,156,0.1));
-        transform: scale(1.02);
-    }
-    
-    .drop-zone-icon {
-        font-size: 4rem;
-        color: #3498db;
-        margin-bottom: 20px;
-        animation: float 3s ease-in-out infinite;
-        filter: drop-shadow(0 5px 15px rgba(52,152,219,0.3));
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    .drop-zone-text {
-        color: #3498db;
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    .drop-zone-subtext {
+    .stFileUploader label::after {
+        content: "\A📋 Limit 200MB per file • JPG, PNG, JPEG";
+        white-space: pre;
+        display: block;
         color: #7f8c8d;
         font-size: 1rem;
         font-weight: 500;
-    }
-    
-    .preview-zone {
-        padding: 30px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(236,240,241,0.8));
-        position: relative;
-    }
-    
-    .preview-placeholder {
-        color: #bdc3c7;
-        font-size: 1.2rem;
-        text-align: center;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    .preview-image {
-        max-width: 100%;
-        max-height: 280px;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        border: 3px solid #3498db;
-        transition: all 0.3s ease;
-    }
-    
-    .preview-image:hover {
-        transform: scale(1.05);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-    }
-    
-    /* Hide default file uploader */
-    .stFileUploader {
-        display: none !important;
+        margin-top: 15px;
+        text-transform: none;
+        letter-spacing: normal;
     }
     
     /* Enhanced Button Styling */
@@ -582,83 +391,14 @@ st.markdown("""
         width: 100%;
         text-transform: uppercase;
         letter-spacing: 2px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .stButton > button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transition: left 0.6s;
-    }
-    
-    .stButton > button:hover::before {
-        left: 100%;
     }
     
     .stButton > button:hover {
         transform: translateY(-5px);
         box-shadow: 0 20px 45px rgba(102,126,234,0.6);
-        background: linear-gradient(135deg, #764ba2, #667eea);
     }
     
-    /* Enhanced Footer */
-    .footer-section {
-        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95));
-        backdrop-filter: blur(25px);
-        color: white;
-        padding: 4rem 2rem;
-        border-radius: 30px;
-        margin-top: 5rem;
-        text-align: center;
-        border: 3px solid rgba(255,255,255,0.2);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .footer-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe);
-        animation: rainbow 3s linear infinite;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .main-title { font-size: 3.5rem; letter-spacing: 2px; }
-        .stats-grid { grid-template-columns: 1fr; gap: 20px; }
-        .stat-card { padding: 2rem; }
-        .developer-badge { font-size: 1.1rem; padding: 20px 40px; }
-        .upload-content { grid-template-columns: 1fr; }
-        .drop-zone { border-right: none; border-bottom: 3px solid #e0e0e0; }
-        .enhanced-upload-container { margin: 2rem 1rem; }
-        .block-container { padding: 1rem; }
-    }
-    
-    @media (max-width: 480px) {
-        .main-title { font-size: 2.8rem; }
-        .subtitle { font-size: 1.3rem; }
-        .developer-badge { font-size: 1rem; padding: 15px 30px; }
-        .stat-number { font-size: 3rem; }
-        .upload-header { font-size: 1.2rem; padding: 20px; }
-    }
-    
-    /* Enhanced Animation Keyframes */
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-    
+    /* Animation Keyframes */
     @keyframes pulseAlert {
         0%, 100% { box-shadow: 0 25px 80px rgba(255, 71, 87, 0.5); }
         50% { box-shadow: 0 30px 100px rgba(255, 71, 87, 0.7); }
@@ -687,13 +427,22 @@ st.markdown("""
         42% { transform: scale(1.3); }
         70% { transform: scale(1); }
     }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .main-title { font-size: 3.5rem; letter-spacing: 2px; }
+        .stats-grid { grid-template-columns: 1fr; gap: 20px; }
+        .stat-card { padding: 2rem; }
+        .developer-badge { font-size: 1.1rem; padding: 20px 40px; }
+        .stFileUploader { margin: 2rem 1rem; }
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # Enhanced Title Section
 st.markdown("""
 <div class='title-section'>
-    <div style='font-size: 7rem; margin-bottom: 2rem; animation: float 4s ease-in-out infinite; filter: drop-shadow(0 0 30px rgba(255,255,255,0.5));'>🫁</div>
+    <div style='font-size: 7rem; margin-bottom: 2rem; filter: drop-shadow(0 0 30px rgba(255,255,255,0.5));'>🫁</div>
     <h1 class='main-title'>PneumoDetect AI</h1>
     <p class='subtitle'>🔬 Advanced Chest X-Ray Analysis | 🎯 Clinical-Grade Artificial Intelligence</p>
     <div class='developer-badge'>
@@ -728,30 +477,24 @@ st.markdown("""
 model = load_model()
 
 if model is not None:
-    # Enhanced Upload Container with Working Preview
+    # WORKING DRAG & DROP - Using Streamlit's file_uploader with enhanced styling
     st.markdown("""
-    <div class='enhanced-upload-container'>
-        <div class='upload-header'>
+    <div style='text-align: center; margin: 2rem 0;'>
+        <h2 style='color: white; font-weight: 700; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);'>
             📤 Upload Chest X-Ray for AI Analysis
-        </div>
-        <div class='upload-content'>
-            <div class='drop-zone'>
-                <div class='drop-zone-icon'>🫁</div>
-                <div class='drop-zone-text'>Drag and Drop File Here</div>
-                <div class='drop-zone-subtext'>Limit 200MB per file • JPG, PNG, JPEG</div>
-            </div>
-            <div class='preview-zone'>
-                <div class='preview-placeholder'>📋 Image Preview Will Appear Here</div>
-            </div>
-        </div>
+        </h2>
     </div>
     """, unsafe_allow_html=True)
     
-    # File uploader (styled to be invisible but functional)
-    uploaded_file = st.file_uploader("", type=['jpg', 'png', 'jpeg'])
+    # FUNCTIONAL file uploader with drag & drop styling
+    uploaded_file = st.file_uploader(
+        "Drag and drop file here",
+        type=['jpg', 'png', 'jpeg'],
+        help="Upload a chest X-ray image for AI-powered pneumonia detection"
+    )
     
     if uploaded_file is not None:
-        # Display image with enhanced styling - FIXED VERSION
+        # Display image with enhanced styling
         image = Image.open(uploaded_file)
         
         # Create a centered container for the image
@@ -767,21 +510,9 @@ if model is not None:
                 box-shadow: 0 20px 50px rgba(0,0,0,0.2);
                 border: 3px solid rgba(52,152,219,0.4);
                 text-align: center;
-                position: relative;
-                overflow: hidden;
             '>
-                <div style='
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    height: 3px;
-                    background: linear-gradient(90deg, #3498db, #2980b9, #3498db);
-                    animation: shimmer 2s infinite;
-                '></div>
             """, unsafe_allow_html=True)
             
-            # FIXED: Proper image display without JavaScript
             st.image(image, caption="📸 Uploaded Chest X-Ray - Ready for AI Analysis", use_container_width=True)
             
             st.markdown("</div>", unsafe_allow_html=True)
@@ -797,9 +528,19 @@ if model is not None:
 
                 display_premium_results(result, prediction, image)
 
-    # Enhanced Footer Section - WORKING VERSION
+    # FIXED FOOTER SECTION - Working HTML
     st.markdown("""
-    <div class='footer-section'>
+    <div style='
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95));
+        backdrop-filter: blur(25px);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 30px;
+        margin-top: 5rem;
+        text-align: center;
+        border: 3px solid rgba(255,255,255,0.2);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    '>
         <div style='margin-bottom: 3rem;'>
             <h3 style='color: #74b9ff; margin-bottom: 1.5rem; font-size: 2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;'>⚠️ Medical Disclaimer</h3>
             <p style='font-size: 1.2rem; line-height: 1.9; margin-bottom: 2.5rem; color: rgba(255,255,255,0.95); font-weight: 500;'>
@@ -809,19 +550,8 @@ if model is not None:
             </p>
         </div>
         
-        <div style='
-            border-top: 3px solid rgba(255,255,255,0.2); 
-            padding-top: 3rem;
-            text-align: center;
-        '>
-            <div style='
-                background: rgba(255,255,255,0.15);
-                padding: 2.5rem;
-                border-radius: 25px;
-                margin: 1.5rem 0;
-                border: 2px solid rgba(255,255,255,0.3);
-                backdrop-filter: blur(15px);
-            '>
+        <div style='border-top: 3px solid rgba(255,255,255,0.2); padding-top: 3rem; text-align: center;'>
+            <div style='background: rgba(255,255,255,0.15); padding: 2.5rem; border-radius: 25px; margin: 1.5rem 0; border: 2px solid rgba(255,255,255,0.3);'>
                 <h4 style='color: #74b9ff; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;'>👩‍💻 Developer</h4>
                 <p style='margin: 0; font-size: 1.5rem; font-weight: 800; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);'>Ayushi Rathour</p>
                 <p style='margin: 12px 0; color: #ddd; font-size: 1.2rem; font-weight: 600;'>Biotechnology Graduate</p>
@@ -829,11 +559,7 @@ if model is not None:
                 <p style='margin: 20px 0; color: #74b9ff; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;'>🚀 Bridging Biology & Technology</p>
             </div>
             
-            <div style='
-                margin-top: 3rem; 
-                padding-top: 3rem; 
-                border-top: 2px solid rgba(255,255,255,0.15);
-            '>
+            <div style='margin-top: 3rem; padding-top: 3rem; border-top: 2px solid rgba(255,255,255,0.15);'>
                 <p style='color: #bdc3c7; font-size: 1.1rem; line-height: 1.9; font-weight: 500;'>
                     🏥 Developed with ❤️ for Healthcare Innovation<br>
                     🔬 Powered by TensorFlow & Streamlit<br>
