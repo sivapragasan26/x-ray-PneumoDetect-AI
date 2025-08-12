@@ -567,21 +567,23 @@ if uploaded_file is not None:
 st.markdown(
     f"""
     <div class="tech-section">
-        <div class="tech-title">🔬 Technology & Methodology</div>
+        <div class="tech-title">🔬 How It Works</div>
         <div class="tech-description">
-            PneumoDetect AI utilizes a <strong>MobileNetV2</strong> deep learning architecture, trained on thousands of chest X-ray images. 
-            Our model achieved <strong>{MODEL_SPECS['accuracy']}% accuracy</strong> and <strong>{MODEL_SPECS['sensitivity']}% sensitivity</strong> 
-            through rigorous validation on <strong>{MODEL_SPECS['validation_samples']} independent samples</strong>. 
-            The system processes images in under 3 seconds, making it suitable for clinical environments requiring rapid screening.
+            PneumoDetect AI is powered by the <strong>MobileNetV2</strong> deep learning model, trained on thousands of chest X-ray images. 
+            Validated on <strong>{MODEL_SPECS['validation_samples']} independent samples</strong>, it achieved 
+            <strong>{MODEL_SPECS['accuracy']}% accuracy</strong> and <strong>{MODEL_SPECS['sensitivity']}% sensitivity</strong>. 
+            Optimized for real-time clinical screening, the system delivers AI-powered results in just 
+            <strong>2.5 seconds</strong> — making it a powerful tool for fast, accurate pneumonia detection.
             <br><br>
             <a href="https://github.com/ayushirathour/chest-xray-pneumonia-detection-ai" target="_blank" style="color: #74b9ff; text-decoration: none;">
-                📂 View Source Code & Model Details on GitHub →
+                📂 View Model & Source Code →
             </a>
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
+
 
 # 7. Medical Disclaimer
 st.markdown(
@@ -600,8 +602,7 @@ st.markdown(
     <div class="about-developer">
         <div class="developer-title">👩‍💻 About the Developer</div>
         <div class="developer-bio">
-           Trained, developed, and deployed by <strong>Ayushi Rathour</strong> | Biotechnology Graduate — 
-            bridging AI innovation and medical diagnostics through advanced image analysis.
+          Trained, developed, and deployed by Ayushi Rathour | Biotechnology Graduate, bridging AI innovation and medical diagnostics through advanced image analysis.
         </div>
     </div>
     """,
@@ -657,4 +658,5 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
