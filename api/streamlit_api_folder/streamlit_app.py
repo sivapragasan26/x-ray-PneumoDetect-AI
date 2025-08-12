@@ -465,7 +465,7 @@ st.markdown(
 st.markdown(
     """
     <div class="value-prop">
-        <div class="value-prop-title">Designed for doctors, researchers, and patients — instant insights backed by AI.</div>
+        <div class="value-prop-title">Designed for doctors, researchers, and patients. Instant AI-powered insights.</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -600,10 +600,8 @@ st.markdown(
     <div class="about-developer">
         <div class="developer-title">👩‍💻 About the Developer</div>
         <div class="developer-bio">
-            <strong>Ayushi Rathour</strong> is a Biotechnology graduate with a passion for leveraging artificial intelligence in healthcare. 
-            Specializing in medical image analysis and machine learning, she focuses on developing accessible AI tools that can assist 
-            healthcare professionals in making faster, more accurate diagnoses. PneumoDetect AI represents her commitment to bridging 
-            the gap between cutting-edge technology and practical medical applications.
+           Trained, developed, and deployed by <strong>Ayushi Rathour</strong> | Biotechnology Graduate — 
+            bridging AI innovation and medical diagnostics through advanced image analysis.
         </div>
     </div>
     """,
@@ -614,7 +612,7 @@ st.markdown(
 st.markdown(
     """
     <div class="social-section">
-        <div class="developed-by">developed by ayushi rathour</div>
+        <div class="developed-by">Empowering healthcare through intelligent technology</div>
         <div class="social-icons">
             <a href="https://github.com/ayushirathour" target="_blank" title="GitHub">
                 <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
@@ -659,3 +657,4 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
