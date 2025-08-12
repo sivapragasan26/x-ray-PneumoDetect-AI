@@ -134,7 +134,7 @@ This system underwent **two-tier validation** to ensure reliable real-world perf
 *Perfect specificity (0% false positives) on 269 test samples*
 
 ![Internal ROC Curve](results/internal_validation/roc_curve.png)
-*ROC-AUC: 0.9879 - Outstanding diagnostic discrimination*
+*ROC-AUC: 0.9888 - Outstanding diagnostic discrimination*
 
 ![Internal Precision-Recall Curve](results/internal_validation/precision_recall_curve.png)
 *Excellent precision-recall balance for medical screening*
