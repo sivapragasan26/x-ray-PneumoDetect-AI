@@ -30,6 +30,7 @@
 ---
 
 ## 🌐 **Live Application**
+![PneumoDetect AI Demo](demo/pneumodetect_demo.gif)
 
 ### **🎯 Interactive Web Interface**
 **🔗 [PneumoDetect AI - Live Demo](https://pneumodetectai.streamlit.app/)**
