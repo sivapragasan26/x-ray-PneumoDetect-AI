@@ -134,10 +134,12 @@ MODEL_SPECS = {
     "specificity": 74.8,
     "validation_samples": 485,
     "avg_prediction_time": "2.5 sec",
+    "total_scans": "800+",  # ADDED: New stat
     "developer": "Ayushi Rathour",
     "supported_formats": ["JPG", "JPEG", "PNG"],
     "max_file_size_mb": 200
 }
+
 
 # -----------------------------
 # STREAMLIT UI (same design, updated content)
@@ -578,10 +580,15 @@ st.markdown(
             <div class="stat-value">⏱ {MODEL_SPECS['avg_prediction_time']}</div>
             <div class="stat-label">Analysis Time</div>
         </div>
+        <div class="stat-card">
+            <div class="stat-value">📊 {MODEL_SPECS['total_scans']}</div>
+            <div class="stat-label">Total Scans</div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
+
 
 # 4. File Upload & Analysis Panel
 st.markdown(
@@ -752,5 +759,6 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
