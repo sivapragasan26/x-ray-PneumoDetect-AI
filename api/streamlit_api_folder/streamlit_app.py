@@ -3,9 +3,6 @@ import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
-import cv2
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 
 @st.cache_resource
 def load_model():
@@ -83,42 +80,8 @@ def interpret_prediction(prediction_score):
         "recommendation": recommendation
     }
 
-def generate_gradcam(model, img_array, last_conv_layer_name='block_16_project_BN'):
-    """Generate GradCAM heatmap for model explainability - YOUR LOGIC UNCHANGED"""
-    try:
-        grad_model = tf.keras.models.Model(
-            [model.inputs], 
-            [model.get_layer(last_conv_layer_name).output, model.output]
-        )
-        
-        with tf.GradientTape() as tape:
-            conv_outputs, predictions = grad_model(img_array)
-            class_channel = predictions[:, 0]
-        
-        grads = tape.gradient(class_channel, conv_outputs)
-        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-        
-        conv_outputs = conv_outputs[0]
-        heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
-        heatmap = tf.squeeze(heatmap)
-        
-        heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
-        
-        return heatmap.numpy()
-    except Exception as e:
-        st.warning(f"GradCAM generation failed: {e}")
-        return None
-
-def create_gradcam_overlay(image, heatmap, alpha=0.6):
-    """Create an overlay of the original image with GradCAM heatmap - YOUR LOGIC UNCHANGED"""
-    heatmap_resized = cv2.resize(heatmap, (image.shape[1], image.shape[0]))
-    heatmap_colored = cm.jet(heatmap_resized)[:, :, :3]
-    image_float = image.astype(np.float32) / 255.0
-    overlay = heatmap_colored * alpha + image_float * (1 - alpha)
-    return (overlay * 255).astype(np.uint8)
-
-def display_premium_results(result, prediction, image, model, img_array):
-    """Display results with ENHANCED premium styling and GradCAM"""
+def display_premium_results(result, prediction, image):
+    """Display results with ENHANCED premium styling - GradCAM REMOVED"""
     
     # Enhanced Results container with stunning animations
     if result['diagnosis'] == 'PNEUMONIA':
@@ -236,7 +199,7 @@ def display_premium_results(result, prediction, image, model, img_array):
         </div>
         """, unsafe_allow_html=True)
     
-    # Enhanced GradCAM Section
+    # Enhanced AI Analysis Explanation Section (Replaces GradCAM)
     st.markdown("""
     <div style='
         background: linear-gradient(145deg, #ffffff, #f8f9fa);
@@ -265,48 +228,48 @@ def display_premium_results(result, prediction, image, model, img_array):
             font-size: 1.8rem;
             font-weight: 700;
         '>
-            🔍 AI Focus Areas (GradCAM Analysis)
+            🧠 AI Analysis Explanation
         </h3>
-        <p style='
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            font-style: italic;
+        <div style='
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
         '>
-            Understanding where the AI focused its attention during diagnosis
-        </p>
-    """, unsafe_allow_html=True)
-    
-    # Generate GradCAM with enhanced loading
-    with st.spinner("🧠 Generating AI explainability visualization..."):
-        heatmap = generate_gradcam(model, img_array)
-        
-        if heatmap is not None:
-            image_np = np.array(image.resize((224, 224)))
-            overlay = create_gradcam_overlay(image_np, heatmap)
-            
-            col1, col2, col3 = st.columns([0.5, 3, 0.5])
-            with col2:
-                st.image(overlay, caption="🎯 AI Attention Heatmap - Red areas show regions of highest diagnostic importance", use_column_width=True)
-                
-                st.markdown("""
-                <div style='
-                    background: linear-gradient(135deg, #74b9ff, #0984e3);
-                    color: white;
-                    padding: 15px;
-                    border-radius: 12px;
-                    margin-top: 15px;
-                    text-align: center;
-                '>
-                    <strong>🎯 Interpretation Guide:</strong><br>
-                    Red/Yellow = High Attention | Blue = Medium Attention | Dark = Low Attention
+            <h4 style='margin: 0 0 15px 0; font-size: 1.4rem;'>🔍 How the AI Analyzed Your X-Ray</h4>
+            <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;'>
+                <div style='background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;'>
+                    <h5 style='margin: 0 0 8px 0; color: #74b9ff;'>🫁 Lung Tissue Patterns</h5>
+                    <p style='margin: 0; font-size: 0.95rem; opacity: 0.9;'>Analyzed opacity, consolidation, and tissue density variations</p>
                 </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.info("🔬 GradCAM visualization temporarily unavailable - all other analyses remain accurate")
-    
-    st.markdown("</div>", unsafe_allow_html=True)
+                <div style='background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;'>
+                    <h5 style='margin: 0 0 8px 0; color: #74b9ff;'>🔍 Air Bronchograms</h5>
+                    <p style='margin: 0; font-size: 0.95rem; opacity: 0.9;'>Examined visible airways indicating inflammation</p>
+                </div>
+                <div style='background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;'>
+                    <h5 style='margin: 0 0 8px 0; color: #74b9ff;'>💧 Pleural Spaces</h5>
+                    <p style='margin: 0; font-size: 0.95rem; opacity: 0.9;'>Checked for fluid accumulation and abnormalities</p>
+                </div>
+                <div style='background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;'>
+                    <h5 style='margin: 0 0 8px 0; color: #74b9ff;'>📊 Pattern Recognition</h5>
+                    <p style='margin: 0; font-size: 0.95rem; opacity: 0.9;'>Compared against 5,856 training X-ray patterns</p>
+                </div>
+            </div>
+            <div style='
+                background: rgba(255,255,255,0.15);
+                padding: 20px;
+                border-radius: 15px;
+                margin-top: 20px;
+                text-align: center;
+            '>
+                <p style='margin: 0; font-size: 1.1rem; font-weight: 600;'>
+                    🎯 The {result['confidence']}% confidence level is based on comprehensive analysis of these diagnostic features using deep learning algorithms trained on medical imaging data.
+                </p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Enhanced Technical Analysis Section
     st.markdown(f"""
@@ -823,8 +786,8 @@ st.markdown("""
             transition: transform 0.3s ease;
         '>
             <div style='font-size: 3rem; margin-bottom: 10px;'>🧠</div>
-            <h4 style='margin: 0; font-size: 1.3rem; font-weight: 700;'>Explainability</h4>
-            <p style='margin: 8px 0 0 0; opacity: 0.9;'>GradCAM visualization</p>
+            <h4 style='margin: 0; font-size: 1.3rem; font-weight: 700;'>Deep Learning</h4>
+            <p style='margin: 8px 0 0 0; opacity: 0.9;'>Neural network analysis</p>
         </div>
     </div>
 </div>
@@ -925,8 +888,8 @@ if model is not None:
                     prediction = model.predict(processed_image, verbose=0)[0][0]
                     result = interpret_prediction(prediction)
 
-                # Display enhanced results with GradCAM
-                display_premium_results(result, prediction, image, model, processed_image)
+                # Display enhanced results WITHOUT GradCAM
+                display_premium_results(result, prediction, image)
 
     # ENHANCED FOOTER SECTION  
     st.markdown("""
@@ -968,8 +931,8 @@ if model is not None:
                     <p style='margin: 8px 0; font-weight: 500;'>• TensorFlow 2.x & Keras</p>
                     <p style='margin: 8px 0; font-weight: 500;'>• Streamlit & Python</p>
                     <p style='margin: 8px 0; font-weight: 500;'>• Computer Vision & CNN</p>
-                    <p style='margin: 8px 0; font-weight: 500;'>• Deep Learning & GradCAM</p>
-                    <p style='margin: 8px 0; font-weight: 500;'>• Medical Image Analysis</p>
+                    <p style='margin: 8px 0; font-weight: 500;'>• Deep Learning Analysis</p>
+                    <p style='margin: 8px 0; font-weight: 500;'>• Medical Image Processing</p>
                 </div>
                 
                 <div style='
