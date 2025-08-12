@@ -714,7 +714,7 @@ st.markdown(
 st.markdown(
     """
     <div class="social-section">
-        <div class="developed-by">Empowering healthcare through intelligent technology</div>
+        <div class="developed-by"></div>
         <div class="social-icons">
             <a href="https://github.com/ayushirathour" target="_blank" title="GitHub">
                 <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
@@ -759,6 +759,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
