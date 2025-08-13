@@ -147,7 +147,7 @@ MODEL_SPECS = {
 # -----------------------------
 def generate_medical_pdf_report(prediction_result, analysis_time):
     """
-    Generate professional medical PDF report (Unicode-safe version)
+    Generate professional medical PDF report (Unicode-safe + Version-safe)
     """
     
     def clean_text_for_pdf(text):
@@ -238,16 +238,12 @@ def generate_medical_pdf_report(prediction_result, analysis_time):
     clean_disclaimer = clean_text_for_pdf(disclaimer_text)
     pdf.multi_cell(0, 6, clean_disclaimer)
     
-    return pdf.output(dest='S').encode('latin-1')
-
-def create_pdf_download_link(pdf_data, filename):
-    """
-    Create download link for PDF file
-    """
-    b64 = base64.b64encode(pdf_data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}" style="color: #74b9ff; text-decoration: none; font-weight: bold;">📄 Download Medical Report (PDF)</a>'
-    return href
-
+    # FIXED: Version-safe return statement
+    pdf_output = pdf.output(dest='S')
+    if isinstance(pdf_output, str):
+        return pdf_output.encode('latin-1')
+    else:
+        return pdf_output  # Already bytes
 
 
 # -----------------------------
@@ -897,6 +893,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
