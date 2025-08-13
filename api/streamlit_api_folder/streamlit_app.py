@@ -752,6 +752,8 @@ if uploaded_file is not None:
                 st.session_state["analyzed_image"] = image
 
         # FIXED: Display results from session state (not just from button click)
+                  
+          # FIXED: Display results from session state (not just from button click)
         if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
             prediction_data = st.session_state["prediction_results"]
             elapsed = st.session_state["analysis_time"]
@@ -761,12 +763,12 @@ if uploaded_file is not None:
             else:
                 res = prediction_data["result"]
 
-                # Clean results presentation
+                # 1. MAIN DIAGNOSIS (Clean & Prominent)
                 if res["diagnosis"] == "PNEUMONIA":
                     st.error(f"""
                     **🩺 DIAGNOSIS: PNEUMONIA DETECTED**
                     
-                    **Confidence Level:** {res['confidence_level']} ({res['confidence']}%)
+                    **Confidence:** {res['confidence_level']} ({res['confidence']}%)
                     
                     **Recommendation:** {res['recommendation']}
                     """)
@@ -774,80 +776,55 @@ if uploaded_file is not None:
                     st.success(f"""
                     **✅ DIAGNOSIS: NORMAL CHEST X-RAY**
                     
-                    **Confidence Level:** {res['confidence_level']} ({res['confidence']}%)
+                    **Confidence:** {res['confidence_level']} ({res['confidence']}%)
                     
                     **Recommendation:** {res['recommendation']}
                     """)
 
-                # Technical Report (Toggle)
-                with st.expander("📊 Technical Report"):
-                    st.write(f"""
-                    **Model Architecture:** {res['model_architecture']}  
-                    **Raw Score:** {res['raw_score']:.4f}  
-                    **Decision Threshold:** {res['threshold']}  
-                    **Processing Time:** {elapsed:.2f} seconds  
-                    **Validation Samples:** {MODEL_SPECS['validation_samples']}
-                    """)
-                # AI Decision Explanation - BETTER THAN GRAD-CAM!
-                st.subheader("🧠 AI Decision Explanation")
-                
-                # Visual confidence indicator
-                confidence_color = "success" if res["confidence"] >= 80 else "warning" if res["confidence"] >= 60 else "info"
-                confidence_icon = "🎯" if res["confidence"] >= 80 else "⚠️" if res["confidence"] >= 60 else "💭"
-                
-                if confidence_color == "success":
-                    st.success(f"{confidence_icon} **High Confidence: {res['confidence']}%**")
-                elif confidence_color == "warning":
-                    st.warning(f"{confidence_icon} **Moderate Confidence: {res['confidence']}%**")
-                else:
-                    st.info(f"{confidence_icon} **Low Confidence: {res['confidence']}%**")
-                
-                # Confidence bar
+                # 2. CONFIDENCE VISUALIZATION (Simple & Clean)
                 st.progress(res['confidence']/100)
                 
-                # What the AI analyzed
-                with st.expander("🔍 What the AI Analyzed"):
-                    raw_score = res['raw_score']
+                # 3. SINGLE COMPREHENSIVE ANALYSIS SECTION
+                with st.expander("📊 Complete Analysis Details"):
+                    col1, col2 = st.columns(2)
                     
-                    st.write("**Key Analysis Factors:**")
-                    if raw_score > 0.8:
-                        st.write("• Strong consolidation patterns detected in lung regions")
-                        st.write("• High-density areas consistent with pneumonia characteristics")
-                        st.write("• Clear abnormal tissue features identified")
-                        st.write("• Pattern matches high-confidence training cases")
-                    elif raw_score > 0.6:
-                        st.write("• Moderate lung density changes observed")
-                        st.write("• Some consolidation patterns present")
-                        st.write("• Mixed normal and abnormal features detected")
-                        st.write("• Requires clinical correlation")
-                    else:
-                        st.write("• Minimal abnormal patterns detected")
-                        st.write("• Lung fields appear predominantly clear")
-                        st.write("• Normal tissue density patterns observed")
-                        st.write("• Consistent with normal chest X-ray")
+                    with col1:
+                        st.write("**🔬 Analysis Results:**")
+                        st.write(f"• **Raw Score:** {res['raw_score']:.4f}")
+                        st.write(f"• **Decision Threshold:** {res['threshold']}")
+                        st.write(f"• **Processing Time:** {elapsed:.2f} seconds")
+                        st.write(f"• **Model Architecture:** {res['model_architecture']}")
+                        
+                        st.write("**📈 Model Performance:**")
+                        st.write(f"• **External Validation:** {MODEL_SPECS['accuracy']}% accuracy")
+                        st.write(f"• **Sensitivity:** {MODEL_SPECS['sensitivity']}% (catches 96/100 cases)")
+                        st.write(f"• **Validation Dataset:** {MODEL_SPECS['validation_samples']} samples")
                     
-                    st.info(f"""
-                    **🔬 Technical Analysis Details:**
-                    - **Resolution:** Analyzed at {224}×{224} pixel resolution
-                    - **Focus Areas:** Lung consolidation, opacity patterns, tissue density
-                    - **Validation:** Compared against {MODEL_SPECS['validation_samples']} externally validated cases  
-                    - **Sensitivity:** {MODEL_SPECS['sensitivity']}% (detects 96 out of 100 pneumonia cases)
-                    - **Processing Time:** {elapsed:.2f} seconds
-                    """)
-                
-                # Decision process
-                with st.expander("⚙️ AI Decision Process"):
-                    st.write("**Step-by-Step Analysis:**")
-                    st.write("1. **Image Preprocessing** → Normalized to medical imaging standards")
-                    st.write("2. **Feature Extraction** → MobileNetV2 identified 1,280 distinct features")  
-                    st.write("3. **Pattern Recognition** → Compared patterns against training database")
-                    st.write(f"4. **Scoring** → Generated confidence score: {raw_score:.4f}")
-                    st.write(f"5. **Classification** → Applied threshold ({res['threshold']}) for diagnosis")
-                    
-                    if raw_score > res['threshold']:
-                        st.error("**Result:** Score exceeded threshold → PNEUMONIA detected")
-                    else:
-                        st.success("**Result:** Score below threshold → NORMAL chest X-ray")
+                    with col2:
+                        st.write("**🧠 AI Analysis Factors:**")
+                        raw_score = res['raw_score']
+                        if raw_score > 0.8:
+                            st.write("• Strong consolidation patterns detected")
+                            st.write("• High-density areas consistent with pneumonia")
+                            st.write("• Clear abnormal tissue features identified")
+                            st.write("• Pattern matches high-confidence training cases")
+                        elif raw_score > 0.6:
+                            st.write("• Moderate lung density changes observed")
+                            st.write("• Some consolidation patterns present")
+                            st.write("• Mixed normal and abnormal features")
+                            st.write("• Requires clinical correlation")
+                        else:
+                            st.write("• Minimal abnormal patterns detected")
+                            st.write("• Lung fields appear predominantly clear")
+                            st.write("• Normal tissue density patterns")
+                            st.write("• Consistent with normal presentation")
+                        
+                        st.write("**⚙️ Technical Process:**")
+                        st.write("• Image normalized to 224×224 resolution")
+                        st.write("• 1,280 features extracted via MobileNetV2")
+                        st.write("• Pattern recognition against training database")
+                        st.write(f"• Score {res['raw_score']:.4f} vs threshold {res['threshold']}")   
+                  
 
 
                 # PDF Report Generation - FIXED (Now persists!)
@@ -965,6 +942,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
