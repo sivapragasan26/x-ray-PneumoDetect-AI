@@ -244,6 +244,14 @@ def generate_medical_pdf_report(prediction_result, analysis_time):
         return pdf_output.encode('latin-1')
     else:
         return pdf_output  # Already bytes
+        
+def create_pdf_download_link(pdf_data, filename):
+    """
+    Create download link for PDF file
+    """
+    b64 = base64.b64encode(pdf_data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}" style="color: #74b9ff; text-decoration: none; font-weight: bold;">📄 Download Medical Report (PDF)</a>'
+    return href
 
 
 # -----------------------------
@@ -893,6 +901,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
