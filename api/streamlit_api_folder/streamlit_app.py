@@ -6,6 +6,9 @@ import time
 import os
 import tensorflow as tf
 from PIL import Image as PILImage
+import base64
+from fpdf import FPDF
+from datetime import datetime
 
 # -----------------------------
 # MODEL LOGIC (kept intact - unchanged)
@@ -139,6 +142,74 @@ MODEL_SPECS = {
     "supported_formats": ["JPG", "JPEG", "PNG"],
     "max_file_size_mb": 200
 }
+# -----------------------------
+# PDF GENERATION FUNCTIONS (NEW - ADD THIS SECTION)
+# -----------------------------
+def generate_medical_pdf_report(prediction_result, analysis_time):
+    """
+    Generate professional medical PDF report
+    """
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Header
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, 'PneumoDetect AI - Medical Analysis Report', 0, 1, 'C')
+    pdf.ln(10)
+    
+    # Report Details
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Report Information:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, f'Date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}', 0, 1)
+    pdf.cell(0, 8, f'Model: {MODEL_SPECS["name"]} {MODEL_SPECS["version"]}', 0, 1)
+    pdf.cell(0, 8, f'Architecture: {MODEL_SPECS["architecture"]}', 0, 1)
+    pdf.cell(0, 8, f'Analysis Time: {analysis_time:.2f} seconds', 0, 1)
+    pdf.ln(5)
+    
+    # Analysis Results
+    result = prediction_result['result']
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Analysis Results:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, f'Diagnosis: {result["diagnosis"]}', 0, 1)
+    pdf.cell(0, 8, f'Confidence: {result["confidence"]}%', 0, 1)
+    pdf.cell(0, 8, f'Confidence Level: {result["confidence_level"]}', 0, 1)
+    pdf.ln(5)
+    
+    # Recommendation
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Recommendation:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.multi_cell(0, 8, result["recommendation"])
+    pdf.ln(5)
+    
+    # Technical Details
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Technical Details:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, f'Raw Score: {result["raw_score"]:.4f}', 0, 1)
+    pdf.cell(0, 8, f'Decision Threshold: {result["threshold"]}', 0, 1)
+    pdf.cell(0, 8, f'Model Accuracy: {MODEL_SPECS["accuracy"]}%', 0, 1)
+    pdf.cell(0, 8, f'Model Sensitivity: {MODEL_SPECS["sensitivity"]}%', 0, 1)
+    pdf.ln(10)
+    
+    # Medical Disclaimer
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(0, 8, 'MEDICAL DISCLAIMER:', 0, 1)
+    pdf.set_font('Arial', '', 8)
+    pdf.multi_cell(0, 6, 'This AI analysis is for preliminary screening purposes only. Always seek advice from qualified healthcare professionals before making medical decisions. This tool is not approved for clinical diagnosis.')
+    
+    return pdf.output(dest='S').encode('latin-1')
+
+def create_pdf_download_link(pdf_data, filename):
+    """
+    Create download link for PDF file
+    """
+    b64 = base64.b64encode(pdf_data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}" style="color: #74b9ff; text-decoration: none; font-weight: bold;">📄 Download Medical Report (PDF)</a>'
+    return href
+
 
 
 # -----------------------------
@@ -661,6 +732,23 @@ if uploaded_file is not None:
                     **Validation Samples:** {MODEL_SPECS['validation_samples']}
                     """)
 
+                # PDF Report Generation - ADD THIS SECTION
+                st.subheader("📄 Medical Report")
+                st.write("Generate a comprehensive PDF report for medical records:")
+                
+                if st.button("📄 Generate PDF Report", key="pdf_btn"):
+                    with st.spinner("Generating PDF report..."):
+                        # Generate PDF
+                        pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
+                        filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
+                        
+                        # Create download link
+                        download_link = create_pdf_download_link(pdf_data, filename)
+                        
+                        st.success("✅ PDF report generated successfully!")
+                        st.markdown(download_link, unsafe_allow_html=True)
+
+
 # 6. Technology & Methodology
 st.markdown(
     f"""
@@ -759,6 +847,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
