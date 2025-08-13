@@ -512,14 +512,14 @@ st.markdown(
     }
     
  .stButton > button {
-    background: linear-gradient(135deg, #0c0634, #17082f, #0a021f);
+    background: linear-gradient(135deg, #4c1d95, #3730a3, #6366f1);
     color: white;
     border: none;
     padding: 16px 32px;
     border-radius: 12px; 
     font-weight: 800;
     font-size: 18px;
-    box-shadow: 0 10px 25px rgba(12, 6, 52, 0.5); 
+    box-shadow: 0 10px 25px rgba(76, 29, 149, 0.4); 
     transition: all 0.3s ease;
     width: 100%;
     max-width: 300px;
@@ -530,9 +530,10 @@ st.markdown(
 }
 .stButton > button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(12, 6, 52, 0.7); 
-    background: linear-gradient(135deg, #271653, #120a27, #030108);
+    box-shadow: 0 15px 35px rgba(76, 29, 149, 0.6); 
+    background: linear-gradient(135deg, #5b21b6, #4338ca, #7c3aed);
 }
+
 
 
 
