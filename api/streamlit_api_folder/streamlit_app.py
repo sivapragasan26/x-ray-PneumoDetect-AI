@@ -927,34 +927,27 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 )
 
             # 2. PDF GENERATION SECTION - CENTERED BELOW CONFIDENCE BAR
-            st.markdown('<div style="text-align: center; margin-top: 20px;">', unsafe_allow_html=True)
-            st.markdown('<h4 style="color: #ffffff; font-weight: 600; margin-bottom: 15px;">📄 Download Medical Report</h4>', unsafe_allow_html=True)
+            # 2. PDF GENERATION SECTION - CLEAN & MINIMAL
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    if st.button("📄 Generate PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report"):
+        with st.spinner("Generating PDF..."):
+            # Generate PDF using session state data
+            pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
+            filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
             
-            # PDF GENERATION BUTTON - CENTERED
-            col1, col2, col3 = st.columns([1, 1, 1])
-            with col2:
-                if st.button("📄 Generate PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report"):
-                    with st.spinner("Generating PDF..."):
-                        # Generate PDF using session state data
-                        pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
-                        filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
-                        
-                        # Create download link
-                        download_link = create_pdf_download_link(pdf_data, filename)
-                        
-                        # Store in session state for persistence
-                        st.session_state["pdf_generated"] = True
-                        st.session_state["pdf_download_link"] = download_link
-                        
-                        st.success("")
+            # Create download link
+            download_link = create_pdf_download_link(pdf_data, filename)
+            
+            # Store in session state for persistence
+            st.session_state["pdf_generated"] = True
+            st.session_state["pdf_download_link"] = download_link
 
-            # DOWNLOAD LINK - APPEARS AFTER PDF GENERATION
-            if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
-                st.markdown('<div style="text-align: center; margin-top: 10px;">', unsafe_allow_html=True)
-                st.markdown(st.session_state.get("pdf_download_link", ""), unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
-            
-            st.markdown('</div>', unsafe_allow_html=True)
+# DOWNLOAD LINK - CENTERED BELOW BUTTON
+if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
+    st.markdown('<div style="text-align: center; margin-top: 15px;">', unsafe_allow_html=True)
+    st.markdown(st.session_state.get("pdf_download_link", ""), unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -1036,6 +1029,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
