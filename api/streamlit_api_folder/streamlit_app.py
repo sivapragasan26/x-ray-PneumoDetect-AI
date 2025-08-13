@@ -844,27 +844,7 @@ if uploaded_file is not None:
                         st.markdown(download_link, unsafe_allow_html=True)
 
 
-# 6. Technology & Methodology
-# Add this new section
-with st.expander("🤖 About This AI Model"):
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write("**🏗️ Model Architecture:**")
-        st.write("• Built on MobileNetV2 deep learning framework")
-        st.write("• Trained on thousands of chest X-ray images")
-        st.write("• Optimized for real-time medical screening")
-        st.write("• Processes 224×224 pixel resolution images")
-        
-    with col2:
-        st.write("**📊 Clinical Validation:**")
-        st.write(f"• External validation: {MODEL_SPECS['accuracy']}% accuracy")
-        st.write(f"• Sensitivity: {MODEL_SPECS['sensitivity']}% (catches 96/100 cases)")
-        st.write(f"• Validated on {MODEL_SPECS['validation_samples']} independent samples")
-        st.write("• Average processing time: 2-3 seconds")
 
-
-# 7. Medical Disclaimer
 # 7. Medical Disclaimer - ENHANCED CENTERED
 st.markdown(
     """
@@ -942,6 +922,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
