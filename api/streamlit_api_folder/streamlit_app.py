@@ -690,15 +690,15 @@ st.markdown(
         </div>
         <div class="stat-card">
             <div class="stat-value">🔍 {MODEL_SPECS['sensitivity']}%</div>
-            <div class="stat-label">Sensitivity</div>
+            <div class="stat-label">Detection Rate</div>
         </div>
         <div class="stat-card">
             <div class="stat-value">⏱ {MODEL_SPECS['avg_prediction_time']}</div>
-            <div class="stat-label">Analysis Time</div>
+            <div class="stat-label">Avg Analysis Time</div>
         </div>
         <div class="stat-card">
             <div class="stat-value">📊 {MODEL_SPECS['total_scans']}</div>
-            <div class="stat-label">Total Scans</div>
+            <div class="stat-label">Scans Complete</div>
         </div>
     </div>
     """,
@@ -845,28 +845,23 @@ if uploaded_file is not None:
 
 
 # 6. Technology & Methodology
-st.markdown(
-    f"""
-    <div class="tech-section" style="text-align: left;">
-        <div class="tech-title"style="text-align: left;">🔬 How It Works</div>
-        <div class="tech-description" style="text-align: left;">
-            <ul style="line-height:1.8; padding-left:20px; margin:0;">
-                <li>Powered by the <strong>MobileNetV2</strong> deep learning architecture</li>
-                <li>Trained on thousands of chest X-ray images for high accuracy</li>
-                <li>Validated on <strong>{MODEL_SPECS['validation_samples']} independent samples</strong></li>
-                <li>Achieved <strong>{MODEL_SPECS['accuracy']}% accuracy</strong> and <strong>{MODEL_SPECS['sensitivity']}% sensitivity</strong></li>
-                <li>Delivers AI-powered pneumonia detection in just <strong>2.5 seconds</strong></li>
-                <li>Optimized for real-time clinical screening</li>
-            </ul>
-            <br>
-            <a href="https://github.com/ayushirathour/chest-xray-pneumonia-detection-ai" target="_blank" style="color: #74b9ff; text-decoration: none;">
-                📂 View Model & Source Code →
-            </a>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# Add this new section
+with st.expander("🤖 About This AI Model"):
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**🏗️ Model Architecture:**")
+        st.write("• Built on MobileNetV2 deep learning framework")
+        st.write("• Trained on thousands of chest X-ray images")
+        st.write("• Optimized for real-time medical screening")
+        st.write("• Processes 224×224 pixel resolution images")
+        
+    with col2:
+        st.write("**📊 Clinical Validation:**")
+        st.write(f"• External validation: {MODEL_SPECS['accuracy']}% accuracy")
+        st.write(f"• Sensitivity: {MODEL_SPECS['sensitivity']}% (catches 96/100 cases)")
+        st.write(f"• Validated on {MODEL_SPECS['validation_samples']} independent samples")
+        st.write("• Average processing time: 2-3 seconds")
 
 
 # 7. Medical Disclaimer
@@ -942,6 +937,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
