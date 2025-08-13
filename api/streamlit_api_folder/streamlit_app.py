@@ -256,6 +256,67 @@ def create_pdf_download_link(pdf_data, filename):
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}" style="color: #74b9ff; text-decoration: none; font-weight: bold;">📄 Download Medical Report (PDF)</a>'
     return href
 
+# -----------------------------
+# GRAD-CAM FUNCTIONS (NEW - ADD THIS SECTION)
+# -----------------------------
+def make_gradcam_heatmap(img_array, model, last_conv_layer_name='mixed_7'):
+    """
+    Generate Grad-CAM heatmap for pneumonia detection
+    """
+    try:
+        # Create gradient model
+        grad_model = tf.keras.models.Model(
+            [model.inputs], 
+            [model.get_layer(last_conv_layer_name).output, model.output]
+        )
+        
+        # Compute gradients
+        with tf.GradientTape() as tape:
+            last_conv_layer_output, preds = grad_model(img_array)
+            pred_index = tf.argmax(preds[0])
+            class_channel = preds[:, pred_index]
+        
+        # Calculate gradients
+        grads = tape.gradient(class_channel, last_conv_layer_output)
+        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+        
+        # Generate heatmap
+        last_conv_layer_output = last_conv_layer_output[0]
+        heatmap = last_conv_layer_output @ pooled_grads[..., tf.newaxis]
+        heatmap = tf.squeeze(heatmap)
+        
+        # Normalize heatmap
+        heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
+        return heatmap.numpy()
+        
+    except Exception as e:
+        st.error(f"Grad-CAM generation failed: {str(e)}")
+        return None
+
+def create_gradcam_overlay(original_image, heatmap):
+    """
+    Create overlay of heatmap on original image
+    """
+    try:
+        # Convert PIL image to numpy array
+        img = np.array(original_image)
+        
+        # Resize heatmap to match image size
+        heatmap_resized = cv2.resize(heatmap, (img.shape[1], img.shape[0]))
+        
+        # Create colored heatmap
+        heatmap_colored = cm.jet(heatmap_resized)[:, :, :3]
+        heatmap_colored = np.uint8(255 * heatmap_colored)
+        
+        # Overlay heatmap on original image
+        overlay = img * 0.6 + heatmap_colored * 0.4
+        return overlay.astype(np.uint8)
+        
+    except Exception as e:
+        st.error(f"Overlay creation failed: {str(e)}")
+        return None
+
+
 
 # -----------------------------
 # STREAMLIT UI (same design, updated content)
@@ -904,6 +965,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
