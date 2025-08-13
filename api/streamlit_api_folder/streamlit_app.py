@@ -953,7 +953,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                         st.session_state["pdf_generated"] = True
                         st.session_state["pdf_download_link"] = download_link
                         
-                        st.success("✅ PDF generated successfully!")
+                        st.success("")
 
             # DOWNLOAD LINK - APPEARS AFTER PDF GENERATION
             if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
@@ -1043,6 +1043,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
