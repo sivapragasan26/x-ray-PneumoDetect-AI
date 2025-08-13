@@ -926,30 +926,46 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                     unsafe_allow_html=True
                 )
 
-            # 2. PDF GENERATION SECTION - CENTERED BELOW CONFIDENCE BAR
-            # 2. PDF GENERATION SECTION - CLEAN & MINIMAL
+          
+# 2. PDF GENERATION SECTION - WITH ERROR HANDLING
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     if st.button("📄 Generate PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report"):
-        with st.spinner("Generating PDF..."):
-            # Generate PDF using session state data
-            pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
-            filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
-            
-            # Create download link
-            download_link = create_pdf_download_link(pdf_data, filename)
-            
-            # Store in session state for persistence
-            st.session_state["pdf_generated"] = True
-            st.session_state["pdf_download_link"] = download_link
+        # CHECK: Has analysis been done?
+        if "prediction_results" not in st.session_state or st.session_state["prediction_results"] is None:
+            # ERROR: No analysis done yet
+            st.error("⚠️ Please upload chest X-ray and analyze first before generating PDF report!")
+            st.info("💡 Steps: 1️⃣ Upload X-ray → 2️⃣ Click Analyze → 3️⃣ Generate PDF")
+        else:
+            # SUCCESS: Analysis exists, generate PDF
+            try:
+                with st.spinner("Generating PDF..."):
+                    # Get data from session state (safe approach)
+                    prediction_data = st.session_state["prediction_results"]
+                    elapsed = st.session_state.get("analysis_time", 0)
+                    
+                    # Generate PDF using session state data
+                    pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
+                    filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
+                    
+                    # Create download link
+                    download_link = create_pdf_download_link(pdf_data, filename)
+                    
+                    # Store in session state for persistence
+                    st.session_state["pdf_generated"] = True
+                    st.session_state["pdf_download_link"] = download_link
+                    
+                    st.success("✅ PDF generated successfully!")
+                    
+            except Exception as e:
+                st.error(f"❌ Failed to generate PDF: {str(e)}")
+                st.info("💡 Please try analyzing the X-ray again")
 
 # DOWNLOAD LINK - CENTERED BELOW BUTTON
 if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
     st.markdown('<div style="text-align: center; margin-top: 15px;">', unsafe_allow_html=True)
     st.markdown(st.session_state.get("pdf_download_link", ""), unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
-
 
 
 # 7. Medical Disclaimer - ENHANCED CENTERED
@@ -1029,6 +1045,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
