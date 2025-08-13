@@ -753,95 +753,108 @@ if uploaded_file is not None:
 
         # FIXED: Display results from session state (not just from button click)
                   
-          # FIXED: Display results from session state (not just from button click)
-        if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
-            prediction_data = st.session_state["prediction_results"]
-            elapsed = st.session_state["analysis_time"]
+         # FIXED: Display results from session state (not just from button click)
+if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
+    prediction_data = st.session_state["prediction_results"]
+    elapsed = st.session_state["analysis_time"]
+    
+    if not prediction_data["success"]:
+        st.error(f"❌ Analysis failed: {prediction_data['error']}")
+    else:
+        res = prediction_data["result"]
+
+        # SINGLE UNIFIED RESULTS CONTAINER
+        st.markdown(
+            f"""
+            <div style="
+                background: rgba(255,255,255,0.08);
+                backdrop-filter: blur(15px);
+                border-radius: 20px;
+                padding: 30px;
+                margin: 30px 0;
+                border: 1px solid rgba(255,255,255,0.12);
+                box-shadow: 0 15px 35px rgba(2,6,23,0.3);
+            ">
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        # 1. MAIN DIAGNOSIS (Inside the container)
+        if res["diagnosis"] == "PNEUMONIA":
+            st.error(f"""
+            **🩺 DIAGNOSIS: PNEUMONIA DETECTED**
             
-            if not prediction_data["success"]:
-                st.error(f"❌ Analysis failed: {prediction_data['error']}")
-            else:
-                res = prediction_data["result"]
+            **Confidence:** {res['confidence_level']} ({res['confidence']}%)
+            
+            **Recommendation:** {res['recommendation']}
+            """)
+        else:
+            st.success(f"""
+            **✅ DIAGNOSIS: NORMAL CHEST X-RAY**
+            
+            **Confidence:** {res['confidence_level']} ({res['confidence']}%)
+            
+            **Recommendation:** {res['recommendation']}
+            """)
 
-                # 1. MAIN DIAGNOSIS (Clean & Prominent)
-                if res["diagnosis"] == "PNEUMONIA":
-                    st.error(f"""
-                    **🩺 DIAGNOSIS: PNEUMONIA DETECTED**
-                    
-                    **Confidence:** {res['confidence_level']} ({res['confidence']}%)
-                    
-                    **Recommendation:** {res['recommendation']}
-                    """)
-                else:
-                    st.success(f"""
-                    **✅ DIAGNOSIS: NORMAL CHEST X-RAY**
-                    
-                    **Confidence:** {res['confidence_level']} ({res['confidence']}%)
-                    
-                    **Recommendation:** {res['recommendation']}
-                    """)
+        # 2. ENHANCED CONFIDENCE VISUALIZATION
+        st.markdown("**📊 Analysis Confidence:**")
+        
+        # Enhanced progress bar with styling
+        progress_color = "#ff4757" if res["diagnosis"] == "PNEUMONIA" else "#2ed573"
+        st.markdown(
+            f"""
+            <div style="margin: 10px 0 20px 0;">
+                <div style="
+                    background-color: rgba(255,255,255,0.1);
+                    border-radius: 10px;
+                    height: 8px;
+                    overflow: hidden;
+                ">
+                    <div style="
+                        background-color: {progress_color};
+                        height: 100%;
+                        width: {res['confidence']}%;
+                        border-radius: 10px;
+                        transition: width 0.5s ease;
+                    "></div>
+                </div>
+                <div style="text-align: center; color: rgba(255,255,255,0.8); font-size: 12px; margin-top: 5px;">
+                    {res['confidence']}% Confidence Level
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-                # 2. CONFIDENCE VISUALIZATION (Simple & Clean)
-                st.progress(res['confidence']/100)
-                
-                # 3. SINGLE COMPREHENSIVE ANALYSIS SECTION
-                with st.expander("📊 Complete Analysis Details"):
-                    col1, col2 = st.columns(2)
+        # 3. COMPACT PDF GENERATION SECTION
+        st.markdown("---")  # Subtle divider
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.markdown("**📄 Download Medical Report**")
+            st.markdown(
+                '<p style="font-size: 14px; color: rgba(255,255,255,0.7); margin: 5px 0;">Professional PDF report for medical records</p>', 
+                unsafe_allow_html=True
+            )
+        
+        with col2:
+            if st.button("📄 Generate PDF", key="pdf_btn", help="Generate comprehensive medical analysis report"):
+                with st.spinner("Generating PDF..."):
+                    # Generate PDF using session state data
+                    pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
+                    filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
                     
-                    with col1:
-                        st.write("**🔬 Analysis Results:**")
-                        st.write(f"• **Raw Score:** {res['raw_score']:.4f}")
-                        st.write(f"• **Decision Threshold:** {res['threshold']}")
-                        st.write(f"• **Processing Time:** {elapsed:.2f} seconds")
-                        st.write(f"• **Model Architecture:** {res['model_architecture']}")
-                        
-                        st.write("**📈 Model Performance:**")
-                        st.write(f"• **External Validation:** {MODEL_SPECS['accuracy']}% accuracy")
-                        st.write(f"• **Sensitivity:** {MODEL_SPECS['sensitivity']}% (catches 96/100 cases)")
-                        st.write(f"• **Validation Dataset:** {MODEL_SPECS['validation_samples']} samples")
+                    # Create download link
+                    download_link = create_pdf_download_link(pdf_data, filename)
                     
-                    with col2:
-                        st.write("**🧠 AI Analysis Factors:**")
-                        raw_score = res['raw_score']
-                        if raw_score > 0.8:
-                            st.write("• Strong consolidation patterns detected")
-                            st.write("• High-density areas consistent with pneumonia")
-                            st.write("• Clear abnormal tissue features identified")
-                            st.write("• Pattern matches high-confidence training cases")
-                        elif raw_score > 0.6:
-                            st.write("• Moderate lung density changes observed")
-                            st.write("• Some consolidation patterns present")
-                            st.write("• Mixed normal and abnormal features")
-                            st.write("• Requires clinical correlation")
-                        else:
-                            st.write("• Minimal abnormal patterns detected")
-                            st.write("• Lung fields appear predominantly clear")
-                            st.write("• Normal tissue density patterns")
-                            st.write("• Consistent with normal presentation")
-                        
-                        st.write("**⚙️ Technical Process:**")
-                        st.write("• Image normalized to 224×224 resolution")
-                        st.write("• 1,280 features extracted via MobileNetV2")
-                        st.write("• Pattern recognition against training database")
-                        st.write(f"• Score {res['raw_score']:.4f} vs threshold {res['threshold']}")   
-                  
+                    st.success("✅ PDF generated!")
+                    st.markdown(download_link, unsafe_allow_html=True)
+        
+        # Close the container
+        st.markdown("</div>", unsafe_allow_html=True)
 
-
-                # PDF Report Generation - FIXED (Now persists!)
-                st.subheader("📄 Medical Report")
-                st.write("Generate a comprehensive PDF report for medical records:")
-                
-                if st.button("📄 Generate PDF Report", key="pdf_btn"):
-                    with st.spinner("Generating PDF report..."):
-                        # Generate PDF using session state data
-                        pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
-                        filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
-                        
-                        # Create download link
-                        download_link = create_pdf_download_link(pdf_data, filename)
-                        
-                        st.success("✅ PDF report generated successfully!")
-                        st.markdown(download_link, unsafe_allow_html=True)
 
 
 
@@ -922,6 +935,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
