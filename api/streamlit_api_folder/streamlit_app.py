@@ -810,6 +810,7 @@ if uploaded_file is not None:
                   
 
 # FIXED: Display results from session state (not just from button click)
+# Results display section
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
     prediction_data = st.session_state["prediction_results"]
     elapsed = st.session_state["analysis_time"]
@@ -819,14 +820,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
     else:
         res = prediction_data["result"]
 
-        # Use native Streamlit container with border styling (SINGLE CONTAINER ONLY)
-        with st.container(border=True):
-            
-            # 1. MAIN DIAGNOSIS WITH INTEGRATED PROGRESS BAR
-           # 1. UNIFIED DIAGNOSIS CONTAINER - SINGLE DIV FOR EACH SCENARIO
-res = prediction_data["result"]
-
-        # Use native Streamlit container with border styling (SINGLE CONTAINER ONLY)
+        # Use native Streamlit container with border styling
         with st.container(border=True):
             
             # 1. UNIFIED DIAGNOSIS CONTAINER - SINGLE DIV FOR EACH SCENARIO
@@ -902,6 +896,9 @@ res = prediction_data["result"]
                     """,
                     unsafe_allow_html=True
                 )
+
+    
+
 
           
 # 2. PDF GENERATION SECTION - WITH ERROR HANDLING
@@ -1022,6 +1019,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
