@@ -469,29 +469,30 @@ st.markdown(
         box-shadow: 0 20px 40px rgba(0,0,0,0.25);
         border-color: rgba(255,255,255,0.5);
     }
+    
+  .stButton > button {
+    background: linear-gradient(135deg, #2ed573, #1e90ff);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px; 
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 10px 25px rgba(46, 213, 115, 0.3); 
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.stButton > button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(46, 213, 115, 0.5); 
+    background: linear-gradient(135deg, #20bf6b, #1c7cd6);
+}
 
-    .stButton > button {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        border: none;
-        padding: 16px 32px;
-        border-radius: 50px;
-        font-weight: 800;
-        font-size: 18px;
-        box-shadow: 0 10px 25px rgba(102,126,234,0.3);
-        transition: all 0.3s ease;
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
-        display: block;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    .stButton > button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(102,126,234,0.5);
-        background: linear-gradient(135deg, #5a67d8, #6b46c1);
-    }
 
     .tech-section {
         background: rgba(255,255,255,0.05);
@@ -733,10 +734,14 @@ if uploaded_file is not None:
         # Preview image
         st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True, output_format='PNG')
 
-        # Analyze button - centered
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
+
+# Analyze button - BETTER CENTERED with green styling
+st.markdown('<div style="display: flex; justify-content: center; margin: 30px 0;">', unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
+st.markdown('</div>', unsafe_allow_html=True)
+
             
         # FIXED: Store analysis results in session state
         if analyze:
@@ -953,6 +958,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
