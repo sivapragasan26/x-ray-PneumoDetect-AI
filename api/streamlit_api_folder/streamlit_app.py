@@ -777,109 +777,35 @@ st.markdown(
 )
 
 # File uploader
-# Custom CSS for integrated upload box with preview
-st.markdown(
-    """
-    <style>
-    .upload-container {
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(15px);
-        border-radius: 20px;
-        margin: 20px auto;
-        max-width: 600px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        border: 2px dashed rgba(255,255,255,0.3);
-        padding: 20px;
-        transition: all 0.3s ease;
-        text-align: center;
-    }
-    .upload-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-        border-color: rgba(255,255,255,0.5);
-    }
-    .upload-preview {
-        margin-top: 20px;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    }
-    .upload-filename {
-        color: rgba(255,255,255,0.9);
-        font-size: 14px;
-        margin: 10px 0;
-        font-weight: 500;
-        background: rgba(255,255,255,0.1);
-        padding: 8px 15px;
-        border-radius: 20px;
-        display: inline-block;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
-# Integrated upload container
-st.markdown('<div class="upload-container">', unsafe_allow_html=True)
+    # File uploader
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
 
-# File uploader (hidden labels, custom styling)
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload", label_visibility="hidden")
-
-# Show upload instructions when no file
-if uploaded_file is None:
-    st.markdown(
-        """
-        <div style="color: rgba(255,255,255,0.8); font-size: 16px; margin: 20px 0;">
-            📤 <strong>Drag and drop file here</strong><br>
-            <small style="color: rgba(255,255,255,0.6);">Limit 200MB per file • JPG, JPEG, PNG</small>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# Image preview and processing
+# Simple upload and preview
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
+        st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True)
         
-        # Show filename as badge
-        st.markdown(f'<div class="upload-filename">📎 {uploaded_file.name}</div>', unsafe_allow_html=True)
+        # Analyze button
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
         
-        # Show image preview inside the container
-        st.markdown('<div class="upload-preview">', unsafe_allow_html=True)
-        st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True, output_format='PNG')
-        st.markdown('</div>', unsafe_allow_html=True)
-        
+        # Analysis processing
+        if analyze:
+            with st.spinner("🧠 AI Analysis in Progress..."):
+                t0 = time.time()
+                model = load_pneumonia_model()
+                prediction_data = predict_pneumonia(image, model)
+                elapsed = time.time() - t0
+                
+                st.session_state["prediction_results"] = prediction_data
+                st.session_state["analysis_time"] = elapsed
+                st.session_state["analyzed_image"] = image
+                
     except Exception:
         st.error("⚠️ Unable to open image. Please upload a valid JPG/PNG file.")
-        image = None
-
-# Close upload container
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Analyze button section (only show if image is valid)
-if uploaded_file is not None and 'image' in locals() and image is not None:
-    # Analyze button - CENTERED 
-    st.markdown('<div style="display: flex; justify-content: center; margin: 30px 0;">', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Analysis processing
-    if analyze:
-        with st.spinner("🧠 AI Analysis in Progress..."):
-            t0 = time.time()
-            model = load_pneumonia_model()
-            prediction_data = predict_pneumonia(image, model)
-            elapsed = time.time() - t0
-            
-            # Store results in session state
-            st.session_state["prediction_results"] = prediction_data
-            st.session_state["analysis_time"] = elapsed
-            st.session_state["analyzed_image"] = image
-
-            
 
                   
 
@@ -1110,6 +1036,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
