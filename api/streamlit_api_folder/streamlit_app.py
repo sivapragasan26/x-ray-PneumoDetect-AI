@@ -841,7 +841,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 )
 
             # 2. CONFIDENCE VISUALIZATION
-            st.markdown('<p style="color: #333333; font-weight: 600; margin-bottom: 10px;">📊 Analysis Confidence:</p>', unsafe_allow_html=True)
+            st.markdown('<p style="color: #ffffff; font-weight: 600; margin-bottom: 10px;">📊 Analysis Confidence:</p>', unsafe_allow_html=True)
             
             # Use Streamlit's native progress bar
             progress_value = res['confidence'] / 100
@@ -860,7 +860,6 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
             
             with col1:
                 st.markdown('<p style="color: #ffffff; font-weight: 600; margin-bottom: 5px;">📄 Download Medical Report</p>', unsafe_allow_html=True)
-                st.markdown('<p style="font-size: 14px; color: #ffffff; margin: 0;">Professional PDF report for medical records</p>', unsafe_allow_html=True)
             
             with col2:
                 if st.button("📄 Generate PDF", key="pdf_btn", help="Generate comprehensive medical analysis report"):
@@ -954,6 +953,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
