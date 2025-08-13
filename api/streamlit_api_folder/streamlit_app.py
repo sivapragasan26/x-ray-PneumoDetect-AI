@@ -274,7 +274,7 @@ st.markdown(
    .stApp {
     background: linear-gradient(300deg, #0c0634, #17082f, #0a021f, #030108, #120a27, #271653, #0faba9);
     background-size: 420% 420%;
-    animation: gradientAnimation 40s ease infinite;
+    animation: gradientAnimation 10s ease infinite;
     min-height: 100vh;
 }
 
@@ -989,6 +989,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
