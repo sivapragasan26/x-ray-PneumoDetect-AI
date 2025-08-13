@@ -810,90 +810,17 @@ if uploaded_file is not None:
 # Results display section
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
     prediction_data = st.session_state["prediction_results"]
-    elapsed = st.session_state["analysis_time"]
+    res = prediction_data["result"]
     
-    if not prediction_data["success"]:
-        st.error(f"❌ Analysis failed: {prediction_data['error']}")
-    else:
-        res = prediction_data["result"]
-
-        # Use native Streamlit container with border styling
-        with st.container(border=True):
-            
-            # BULLETPROOF PROGRESS BAR VERSION
-            if res["diagnosis"] == "PNEUMONIA":
-                # Single unified container with embedded progress bar
-                progress_html = f"""
-                <div style="
-                    background: rgba(255,0,0,0.1);
-                    border: 1px solid rgba(255,0,0,0.3);
-                    border-radius: 12px;
-                    padding: 20px;
-                    margin-bottom: 20px;
-                ">
-                    <h3 style="color: #d32f2f; margin-bottom: 10px;">🩺 DIAGNOSIS: PNEUMONIA DETECTED</h3>
-                    <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
-                    <p style="color: #ffffff; margin-bottom: 20px;"><strong>Recommendation:</strong> {res['recommendation']}</p>
-                    
-                    <div style="
-                        background-color: rgba(255,255,255,0.2);
-                        border-radius: 8px;
-                        height: 12px;
-                        overflow: hidden;
-                        margin-bottom: 8px;
-                    ">
-                        <div style="
-                            background-color: #d32f2f;
-                            height: 100%;
-                            width: {res['confidence']}%;
-                            border-radius: 8px;
-                            transition: width 0.5s ease;
-                        "></div>
-                    </div>
-                    <div style="text-align: center; color: #ffffff; font-size: 13px; font-weight: 500;">
-                        {res['confidence']}% Confidence Level
-                    </div>
-                </div>
-                """
-                
-                st.markdown(progress_html, unsafe_allow_html=True)
-                
-            else:
-                # Single unified container with embedded progress bar
-                progress_html = f"""
-                <div style="
-                    background: rgba(0,255,0,0.1);
-                    border: 1px solid rgba(0,255,0,0.3);
-                    border-radius: 12px;
-                    padding: 20px;
-                    margin-bottom: 20px;
-                ">
-                    <h3 style="color: #388e3c; margin-bottom: 10px;">✅ DIAGNOSIS: NORMAL CHEST X-RAY</h3>
-                    <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
-                    <p style="color: #ffffff; margin-bottom: 20px;"><strong>Recommendation:</strong> {res['recommendation']}</p>
-                    
-                    <div style="
-                        background-color: rgba(255,255,255,0.2);
-                        border-radius: 8px;
-                        height: 12px;
-                        overflow: hidden;
-                        margin-bottom: 8px;
-                    ">
-                        <div style="
-                            background-color: #388e3c;
-                            height: 100%;
-                            width: {res['confidence']}%;
-                            border-radius: 8px;
-                            transition: width 0.5s ease;
-                        "></div>
-                    </div>
-                    <div style="text-align: center; color: #ffffff; font-size: 13px; font-weight: 500;">
-                        {res['confidence']}% Confidence Level
-                    </div>
-                </div>
-                """
-                
-                st.markdown(progress_html, unsafe_allow_html=True)
+    with st.container(border=True):
+        # Streamlit native progress bar as backup
+        st.write("✅ DIAGNOSIS: NORMAL CHEST X-RAY")
+        st.write(f"Confidence: {res['confidence_level']} ({res['confidence']}%)")
+        st.write(f"Recommendation: {res['recommendation']}")
+        
+        # Streamlit built-in progress bar
+        st.progress(res['confidence'] / 100)
+        st.write(f"{res['confidence']}% Confidence Level")
 
             # PDF GENERATION SECTION
             col1, col2, col3 = st.columns([1, 1, 1])
@@ -995,6 +922,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
