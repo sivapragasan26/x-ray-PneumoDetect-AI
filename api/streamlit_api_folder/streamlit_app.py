@@ -511,15 +511,15 @@ st.markdown(
         border-color: rgba(255,255,255,0.5);
     }
     
-  .stButton > button {
-    background: linear-gradient(135deg, #2ed573, #1e90ff);
+ .stButton > button {
+    background: linear-gradient(135deg, #271653, #0c0634, #17082f);
     color: white;
     border: none;
     padding: 16px 32px;
     border-radius: 12px; 
     font-weight: 800;
     font-size: 18px;
-    box-shadow: 0 10px 25px rgba(46, 213, 115, 0.3); 
+    box-shadow: 0 10px 25px rgba(39, 22, 83, 0.4); 
     transition: all 0.3s ease;
     width: 100%;
     max-width: 300px;
@@ -530,8 +530,8 @@ st.markdown(
 }
 .stButton > button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(46, 213, 115, 0.5); 
-    background: linear-gradient(135deg, #20bf6b, #1c7cd6);
+    box-shadow: 0 15px 35px rgba(39, 22, 83, 0.6); 
+    background: linear-gradient(135deg, #120a27, #0a021f, #030108);
 }
 
 
@@ -1043,6 +1043,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
