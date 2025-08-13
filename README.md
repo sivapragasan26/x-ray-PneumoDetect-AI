@@ -315,7 +315,7 @@ chest-xray-pneumonia-detection/
 |------|---------|-----------|
 | `api/main.py` | FastAPI backend server with prediction endpoints | Python |
 | `api/streamlit_api_folder/streamlit_app.py` | Complete Streamlit web application | Python |
-| `api/streamlit_api_folder/best_chest_xray_model.h5` | Pre-trained TensorFlow model | 185MB |
+| `api/streamlit_api_folder/best_chest_xray_model.h5` | Pre-trained TensorFlow model | 10.8MB |
 | `api/requirements.txt` | API-specific Python dependencies | Text |
 | `demo/pneumodetect_demo.gif` | Streamlit app workflow demo | GIF |
 
