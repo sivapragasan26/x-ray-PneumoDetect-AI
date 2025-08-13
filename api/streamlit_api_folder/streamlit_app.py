@@ -753,7 +753,7 @@ if uploaded_file is not None:
 
         # FIXED: Display results from session state (not just from button click)
                   
-         # FIXED: Display results from session state (not just from button click)
+        # FIXED: Display results from session state (not just from button click)
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
     prediction_data = st.session_state["prediction_results"]
     elapsed = st.session_state["analysis_time"]
@@ -763,97 +763,150 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
     else:
         res = prediction_data["result"]
 
-        # SINGLE UNIFIED RESULTS CONTAINER
-        st.markdown(
-            f"""
-            <div style="
-                background: rgba(255,255,255,0.08);
-                backdrop-filter: blur(15px);
-                border-radius: 20px;
-                padding: 30px;
-                margin: 30px 0;
-                border: 1px solid rgba(255,255,255,0.12);
-                box-shadow: 0 15px 35px rgba(2,6,23,0.3);
-            ">
-            """, 
-            unsafe_allow_html=True
-        )
-        
-        # 1. MAIN DIAGNOSIS (Inside the container)
-        if res["diagnosis"] == "PNEUMONIA":
-            st.error(f"""
-            **🩺 DIAGNOSIS: PNEUMONIA DETECTED**
-            
-            **Confidence:** {res['confidence_level']} ({res['confidence']}%)
-            
-            **Recommendation:** {res['recommendation']}
-            """)
-        else:
-            st.success(f"""
-            **✅ DIAGNOSIS: NORMAL CHEST X-RAY**
-            
-            **Confidence:** {res['confidence_level']} ({res['confidence']}%)
-            
-            **Recommendation:** {res['recommendation']}
-            """)
-
-        # 2. ENHANCED CONFIDENCE VISUALIZATION
-        st.markdown("**📊 Analysis Confidence:**")
-        
-        # Enhanced progress bar with styling
-        progress_color = "#ff4757" if res["diagnosis"] == "PNEUMONIA" else "#2ed573"
-        st.markdown(
-            f"""
-            <div style="margin: 10px 0 20px 0;">
-                <div style="
-                    background-color: rgba(255,255,255,0.1);
-                    border-radius: 10px;
-                    height: 8px;
-                    overflow: hidden;
-                ">
-                    <div style="
-                        background-color: {progress_color};
-                        height: 100%;
-                        width: {res['confidence']}%;
-                        border-radius: 10px;
-                        transition: width 0.5s ease;
-                    "></div>
-                </div>
-                <div style="text-align: center; color: rgba(255,255,255,0.8); font-size: 12px; margin-top: 5px;">
-                    {res['confidence']}% Confidence Level
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # 3. COMPACT PDF GENERATION SECTION
-        st.markdown("---")  # Subtle divider
-        
-        col1, col2 = st.columns([2, 1])
-        
-        with col1:
-            st.markdown("**📄 Download Medical Report**")
+        # WHITE CONTAINER WITH PROPER STREAMLIT CONTAINER
+        with st.container():
+            # Add CSS styling for white container
             st.markdown(
-                '<p style="font-size: 14px; color: rgba(255,255,255,0.7); margin: 5px 0;">Professional PDF report for medical records</p>', 
+                """
+                <style>
+                .results-container {
+                    background: white !important;
+                    padding: 30px;
+                    border-radius: 20px;
+                    margin: 30px 0;
+                    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+                    border: 1px solid rgba(0,0,0,0.05);
+                }
+                .results-container .stAlert > div {
+                    background-color: transparent !important;
+                    color: #333333 !important;
+                }
+                .results-container .stAlert[data-baseweb="alert"] {
+                    background-color: rgba(255,0,0,0.1) !important;
+                }
+                .results-container .stAlert[data-baseweb="alert"][kind="success"] {
+                    background-color: rgba(0,255,0,0.1) !important;
+                }
+                .results-container h1, .results-container h2, .results-container h3, 
+                .results-container p, .results-container div, .results-container span {
+                    color: #333333 !important;
+                }
+                .results-container .stMarkdown {
+                    color: #333333 !important;
+                }
+                .results-container .stButton > button {
+                    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+                    color: white !important;
+                    border: none !important;
+                    padding: 12px 24px !important;
+                    border-radius: 25px !important;
+                    font-weight: 600 !important;
+                    box-shadow: 0 8px 20px rgba(102,126,234,0.3) !important;
+                }
+                .results-container .stButton > button:hover {
+                    transform: translateY(-2px) !important;
+                    box-shadow: 0 12px 25px rgba(102,126,234,0.4) !important;
+                }
+                </style>
+                """,
                 unsafe_allow_html=True
             )
-        
-        with col2:
-            if st.button("📄 Generate PDF", key="pdf_btn", help="Generate comprehensive medical analysis report"):
-                with st.spinner("Generating PDF..."):
-                    # Generate PDF using session state data
-                    pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
-                    filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
-                    
-                    # Create download link
-                    download_link = create_pdf_download_link(pdf_data, filename)
-                    
-                    st.success("✅ PDF generated!")
-                    st.markdown(download_link, unsafe_allow_html=True)
-        
-        # Close the container
-        st.markdown("</div>", unsafe_allow_html=True)
+            
+            # Start the white container
+            st.markdown('<div class="results-container">', unsafe_allow_html=True)
+            
+            # 1. MAIN DIAGNOSIS (Inside the white container)
+            if res["diagnosis"] == "PNEUMONIA":
+                st.markdown(
+                    f"""
+                    <div style="
+                        background: rgba(255,0,0,0.1);
+                        border: 1px solid rgba(255,0,0,0.3);
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                        color: #d32f2f !important;
+                    ">
+                        <h3 style="color: #d32f2f !important; margin-bottom: 10px;">🩺 DIAGNOSIS: PNEUMONIA DETECTED</h3>
+                        <p style="color: #333333 !important; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
+                        <p style="color: #333333 !important; margin: 0;"><strong>Recommendation:</strong> {res['recommendation']}</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    f"""
+                    <div style="
+                        background: rgba(0,255,0,0.1);
+                        border: 1px solid rgba(0,255,0,0.3);
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                        color: #388e3c !important;
+                    ">
+                        <h3 style="color: #388e3c !important; margin-bottom: 10px;">✅ DIAGNOSIS: NORMAL CHEST X-RAY</h3>
+                        <p style="color: #333333 !important; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
+                        <p style="color: #333333 !important; margin: 0;"><strong>Recommendation:</strong> {res['recommendation']}</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            # 2. ENHANCED CONFIDENCE VISUALIZATION (Inside container)
+            st.markdown('<p style="color: #333333; font-weight: 600; margin-bottom: 10px;">📊 Analysis Confidence:</p>', unsafe_allow_html=True)
+            
+            # Enhanced progress bar with white background styling
+            progress_color = "#d32f2f" if res["diagnosis"] == "PNEUMONIA" else "#388e3c"
+            st.markdown(
+                f"""
+                <div style="margin: 10px 0 25px 0;">
+                    <div style="
+                        background-color: rgba(0,0,0,0.1);
+                        border-radius: 10px;
+                        height: 10px;
+                        overflow: hidden;
+                    ">
+                        <div style="
+                            background-color: {progress_color};
+                            height: 100%;
+                            width: {res['confidence']}%;
+                            border-radius: 10px;
+                            transition: width 0.5s ease;
+                        "></div>
+                    </div>
+                    <div style="text-align: center; color: #666666; font-size: 13px; margin-top: 8px; font-weight: 500;">
+                        {res['confidence']}% Confidence Level
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            # 3. COMPACT PDF GENERATION SECTION (Inside container)
+            st.markdown('<hr style="border: 1px solid rgba(0,0,0,0.1); margin: 20px 0;">', unsafe_allow_html=True)
+            
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                st.markdown('<p style="color: #333333; font-weight: 600; margin-bottom: 5px;">📄 Download Medical Report</p>', unsafe_allow_html=True)
+                st.markdown('<p style="font-size: 14px; color: #666666; margin: 0;">Professional PDF report for medical records</p>', unsafe_allow_html=True)
+            
+            with col2:
+                if st.button("📄 Generate PDF", key="pdf_btn", help="Generate comprehensive medical analysis report"):
+                    with st.spinner("Generating PDF..."):
+                        # Generate PDF using session state data
+                        pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
+                        filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
+                        
+                        # Create download link
+                        download_link = create_pdf_download_link(pdf_data, filename)
+                        
+                        st.success("✅ PDF generated!")
+                        st.markdown(download_link, unsafe_allow_html=True)
+            
+            # Close the white container
+            st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -935,6 +988,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
