@@ -675,7 +675,8 @@ st.markdown(
 # File uploader
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
 
-# 5. Results Section (Appears after Upload)
+
+# 5. Results Section (Appears after Upload) - FIXED VERSION
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
@@ -692,13 +693,24 @@ if uploaded_file is not None:
         with col2:
             analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
             
+        # FIXED: Store analysis results in session state
         if analyze:
             with st.spinner("🧠 AI Analysis in Progress..."):
                 t0 = time.time()
                 model = load_pneumonia_model()
                 prediction_data = predict_pneumonia(image, model)
                 elapsed = time.time() - t0
+                
+                # Store results in session state
+                st.session_state["prediction_results"] = prediction_data
+                st.session_state["analysis_time"] = elapsed
+                st.session_state["analyzed_image"] = image
 
+        # FIXED: Display results from session state (not just from button click)
+        if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
+            prediction_data = st.session_state["prediction_results"]
+            elapsed = st.session_state["analysis_time"]
+            
             if not prediction_data["success"]:
                 st.error(f"❌ Analysis failed: {prediction_data['error']}")
             else:
@@ -732,13 +744,13 @@ if uploaded_file is not None:
                     **Validation Samples:** {MODEL_SPECS['validation_samples']}
                     """)
 
-                # PDF Report Generation - ADD THIS SECTION
+                # PDF Report Generation - FIXED (Now persists!)
                 st.subheader("📄 Medical Report")
                 st.write("Generate a comprehensive PDF report for medical records:")
                 
                 if st.button("📄 Generate PDF Report", key="pdf_btn"):
                     with st.spinner("Generating PDF report..."):
-                        # Generate PDF
+                        # Generate PDF using session state data
                         pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
                         filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
                         
@@ -847,6 +859,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
