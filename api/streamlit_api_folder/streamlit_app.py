@@ -615,30 +615,41 @@ st.markdown(
     }
 
     /* RESPONSIVE DESIGN FOR REPOSITIONED HEADER */
-    @media (max-width: 768px) {
-        .fixed-header {
-            top: 40px;
-            padding: 0 20px;
-            height: 75px;
-        }
-        .header-brand {
-            font-size: 22px; /* KEPT: Same size but lighter weight */
-            gap: 0px; /* NO GAP: No emoji */
-            font-weight: 400; /* CONSISTENT: Light weight on mobile */
-        }
-        .header-emoji {
-            display: none; /* HIDDEN: No emoji on mobile either */
-        }
-        .app-container {
-            padding-top: 130px;
-        }
-        .stats-grid { grid-template-columns: 1fr; gap: 16px; }
-        .hero-title { font-size: 36px; }
-        .hero-emoji { font-size: 48px; }
-        .social-icons { gap: 20px; }
-        .social-icon { width: 35px; height: 35px; }
-        .tech-section, .about-developer { padding: 25px; }
+   /* RESPONSIVE DESIGN FOR BLACK GLASSMORPHIC HEADER */
+@media (max-width: 768px) {
+    .fixed-header {
+        top: 40px;
+        padding: 0 20px;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.3);
     }
+    .header-brand {
+        font-size: 18px;
+        gap: 0px;
+        font-weight: 300;
+        letter-spacing: 0.3px;
+        font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    }
+    .header-text {
+        font-size: 18px;
+        font-weight: 300;
+        letter-spacing: 0.3px;
+        font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    }
+    .header-emoji {
+        display: none;
+    }
+    .app-container {
+        padding-top: 110px; /* REDUCED: Smaller header needs less padding */
+    }
+    .stats-grid { grid-template-columns: 1fr; gap: 16px; }
+    .hero-title { font-size: 36px; }
+    .hero-emoji { font-size: 48px; }
+    .social-icons { gap: 20px; }
+    .social-icon { width: 35px; height: 35px; }
+    .tech-section, .about-developer { padding: 25px; }
+}
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -989,6 +1000,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
