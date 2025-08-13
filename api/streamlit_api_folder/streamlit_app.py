@@ -807,6 +807,7 @@ if uploaded_file is not None:
         st.error("⚠️ Unable to open image. Please upload a valid JPG/PNG file.")
 
 # Results display section
+# Results display section
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
     prediction_data = st.session_state["prediction_results"]
     elapsed = st.session_state["analysis_time"]
@@ -819,7 +820,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
         # Use native Streamlit container with border styling
         with st.container(border=True):
             
-            # WORKING PROGRESS BAR VERSION
+            # 1. DIAGNOSIS CONTAINERS (your existing code)
             if res["diagnosis"] == "PNEUMONIA":
                 st.markdown(f"""
                 <div style="background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
@@ -845,49 +846,35 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 </div>
                 """, unsafe_allow_html=True)
 
-            # PDF GENERATION SECTION
-      
-# PDF GENERATION SECTION - BUTTON LEFT, DOWNLOAD RIGHT
-pdf_col1, pdf_col2 = st.columns([1, 1])
+            # 2. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
+            pdf_col1, pdf_col2 = st.columns([1, 1])
 
-with pdf_col1:
-    # Generate PDF button on LEFT
-    if st.button("📄 Generate PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report"):
-        try:
-            with st.spinner("Generating PDF..."):
-                # Get data from session state
-                prediction_data = st.session_state["prediction_results"]
-                elapsed = st.session_state.get("analysis_time", 0)
-                
-                # Generate PDF
-                pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
-                filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
-                
-                # Create download link
-                download_link = create_pdf_download_link(pdf_data, filename)
-                
-                # Store in session state
-                st.session_state["pdf_generated"] = True
-                st.session_state["pdf_download_link"] = download_link
-                
-                # NO SUCCESS MESSAGE - Removed as requested
-                
-        except Exception as e:
-            st.error(f"❌ Failed to generate PDF: {str(e)}")
-            st.info("💡 Please try analyzing the X-ray again")
+            with pdf_col1:
+                # Generate PDF button (only visible after successful analysis)
+                if st.button("📄 Generate PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report"):
+                    try:
+                        with st.spinner("Generating PDF..."):
+                            # Generate PDF using session state data
+                            pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
+                            filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
+                            
+                            # Create download link
+                            download_link = create_pdf_download_link(pdf_data, filename)
+                            
+                            # Store in session state
+                            st.session_state["pdf_generated"] = True
+                            st.session_state["pdf_download_link"] = download_link
+                            
+                    except Exception as e:
+                        st.error(f"❌ Failed to generate PDF: {str(e)}")
+                        st.info("💡 Please try analyzing the X-ray again")
 
-with pdf_col2:
-    # Download link on RIGHT (appears beside button)
-    if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
-        st.markdown(
-            '<div style="text-align: right; padding-top: 8px;">', 
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            st.session_state.get("pdf_download_link", ""), 
-            unsafe_allow_html=True
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+            with pdf_col2:
+                # Download link on RIGHT (appears after PDF generation)
+                if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
+                    st.markdown('<div style="text-align: right; padding-top: 8px;">', unsafe_allow_html=True)
+                    st.markdown(st.session_state.get("pdf_download_link", ""), unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -969,6 +956,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
