@@ -865,15 +865,20 @@ with st.expander("🤖 About This AI Model"):
 
 
 # 7. Medical Disclaimer
+# 7. Medical Disclaimer - ENHANCED CENTERED
 st.markdown(
     """
-    <div class="disclaimer-box">
-        <div class="disclaimer-title">⚠️ Medical Disclaimer</div>
-        <p>This AI tool is intended for preliminary screening purposes only. Always seek advice from qualified healthcare professionals before making medical decisions.</p>
+    <div class="disclaimer-box" style="text-align: center;">
+        <div class="disclaimer-title" style="text-align: center;">⚠️ Medical Disclaimer</div>
+        <p style="text-align: center; margin: 15px auto 0 auto; line-height: 1.6;">
+            This AI tool is intended for preliminary screening purposes only.<br>
+            Always seek advice from qualified healthcare professionals before making medical decisions.
+        </p>
     </div>
     """,
     unsafe_allow_html=True,
 )
+
 
 # 8. About the Developer
 st.markdown(
@@ -937,6 +942,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
