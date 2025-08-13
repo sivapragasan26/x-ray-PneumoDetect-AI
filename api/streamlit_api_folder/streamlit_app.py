@@ -9,6 +9,9 @@ from PIL import Image as PILImage
 import base64
 from fpdf import FPDF
 from datetime import datetime
+import cv2
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 # -----------------------------
 # MODEL LOGIC (kept intact - unchanged)
@@ -901,6 +904,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
