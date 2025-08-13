@@ -879,9 +879,9 @@ st.markdown(
 st.markdown(
     """
     <div class="about-developer">
-        <div class="developer-title">👩‍💻 About the Developer</div>
+        <div class="developer-title">👩‍💻 Developed By</div>
         <div class="developer-bio">
-          Trained, developed, and deployed by Ayushi Rathour | Biotechnology Graduate, bridging AI innovation and medical diagnostics through advanced image analysis.
+          Ayushi Rathour | Biotechnology Graduate bridging AI & healthcare
         </div>
     </div>
     """,
@@ -937,6 +937,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
