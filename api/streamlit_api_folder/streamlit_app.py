@@ -816,8 +816,8 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                         margin-bottom: 20px;
                     ">
                         <h3 style="color: #d32f2f; margin-bottom: 10px;">🩺 DIAGNOSIS: PNEUMONIA DETECTED</h3>
-                        <p style="color: #333333; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
-                        <p style="color: #333333; margin: 0;"><strong>Recommendation:</strong> {res['recommendation']}</p>
+                        <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
+                        <p style="color: #ffffff; margin: 0;"><strong>Recommendation:</strong> {res['recommendation']}</p>
                     </div>
                     """,
                     unsafe_allow_html=True
@@ -833,8 +833,8 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                         margin-bottom: 20px;
                     ">
                         <h3 style="color: #388e3c; margin-bottom: 10px;">✅ DIAGNOSIS: NORMAL CHEST X-RAY</h3>
-                        <p style="color: #333333; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
-                        <p style="color: #333333; margin: 0;"><strong>Recommendation:</strong> {res['recommendation']}</p>
+                        <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
+                        <p style="color: #ffffff; margin: 0;"><strong>Recommendation:</strong> {res['recommendation']}</p>
                     </div>
                     """,
                     unsafe_allow_html=True
@@ -849,7 +849,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
             
             # Add confidence percentage below
             st.markdown(
-                f'<div style="text-align: center; color: #666666; font-size: 13px; margin-top: 8px; font-weight: 500;">{res["confidence"]}% Confidence Level</div>',
+                f'<div style="text-align: center; color: #ffffff; font-size: 13px; margin-top: 8px; font-weight: 500;">{res["confidence"]}% Confidence Level</div>',
                 unsafe_allow_html=True
             )
 
@@ -859,8 +859,8 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
             col1, col2 = st.columns([2, 1])
             
             with col1:
-                st.markdown('<p style="color: #333333; font-weight: 600; margin-bottom: 5px;">📄 Download Medical Report</p>', unsafe_allow_html=True)
-                st.markdown('<p style="font-size: 14px; color: #666666; margin: 0;">Professional PDF report for medical records</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #ffffff; font-weight: 600; margin-bottom: 5px;">📄 Download Medical Report</p>', unsafe_allow_html=True)
+                st.markdown('<p style="font-size: 14px; color: #ffffff; margin: 0;">Professional PDF report for medical records</p>', unsafe_allow_html=True)
             
             with col2:
                 if st.button("📄 Generate PDF", key="pdf_btn", help="Generate comprehensive medical analysis report"):
@@ -954,6 +954,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
