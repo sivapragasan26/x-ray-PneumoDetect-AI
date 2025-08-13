@@ -147,8 +147,40 @@ MODEL_SPECS = {
 # -----------------------------
 def generate_medical_pdf_report(prediction_result, analysis_time):
     """
-    Generate professional medical PDF report
+    Generate professional medical PDF report (Unicode-safe version)
     """
+    
+    def clean_text_for_pdf(text):
+        """
+        Clean text to remove Unicode characters that cause PDF errors
+        """
+        if not text:
+            return ""
+        
+        # Replace problematic Unicode characters
+        replacements = {
+            # Smart quotes to regular quotes
+            '"': '"', '"': '"', ''': "'", ''': "'",
+            # Em/en dashes to regular dashes
+            '—': '-', '–': '-', '−': '-',
+            # Remove emojis and special symbols
+            '✅': '[✓]', '❌': '[✗]', '🚨': '[!]', 
+            '⚠️': '[!]', '💡': '[i]', '🔬': '',
+            '📊': '', '🩺': '', '👍': '', '🤔': '',
+            # Other problematic characters
+            '…': '...', '•': '-', '→': '->', 
+            '°': 'deg', '±': '+/-'
+        }
+        
+        cleaned_text = text
+        for unicode_char, replacement in replacements.items():
+            cleaned_text = cleaned_text.replace(unicode_char, replacement)
+        
+        # Remove any remaining non-ASCII characters
+        cleaned_text = cleaned_text.encode('ascii', 'ignore').decode('ascii')
+        
+        return cleaned_text
+    
     pdf = FPDF()
     pdf.add_page()
     
@@ -172,16 +204,19 @@ def generate_medical_pdf_report(prediction_result, analysis_time):
     pdf.set_font('Arial', 'B', 12)
     pdf.cell(0, 10, 'Analysis Results:', 0, 1)
     pdf.set_font('Arial', '', 10)
-    pdf.cell(0, 8, f'Diagnosis: {result["diagnosis"]}', 0, 1)
+    pdf.cell(0, 8, f'Diagnosis: {clean_text_for_pdf(result["diagnosis"])}', 0, 1)
     pdf.cell(0, 8, f'Confidence: {result["confidence"]}%', 0, 1)
-    pdf.cell(0, 8, f'Confidence Level: {result["confidence_level"]}', 0, 1)
+    pdf.cell(0, 8, f'Confidence Level: {clean_text_for_pdf(result["confidence_level"])}', 0, 1)
     pdf.ln(5)
     
-    # Recommendation
+    # Recommendation - FIXED (Unicode-safe)
     pdf.set_font('Arial', 'B', 12)
     pdf.cell(0, 10, 'Recommendation:', 0, 1)
     pdf.set_font('Arial', '', 10)
-    pdf.multi_cell(0, 8, result["recommendation"])
+    
+    # Clean the recommendation text before adding to PDF
+    clean_recommendation = clean_text_for_pdf(result["recommendation"])
+    pdf.multi_cell(0, 8, clean_recommendation)
     pdf.ln(5)
     
     # Technical Details
@@ -198,7 +233,10 @@ def generate_medical_pdf_report(prediction_result, analysis_time):
     pdf.set_font('Arial', 'B', 10)
     pdf.cell(0, 8, 'MEDICAL DISCLAIMER:', 0, 1)
     pdf.set_font('Arial', '', 8)
-    pdf.multi_cell(0, 6, 'This AI analysis is for preliminary screening purposes only. Always seek advice from qualified healthcare professionals before making medical decisions. This tool is not approved for clinical diagnosis.')
+    
+    disclaimer_text = 'This AI analysis is for preliminary screening purposes only. Always seek advice from qualified healthcare professionals before making medical decisions. This tool is not approved for clinical diagnosis.'
+    clean_disclaimer = clean_text_for_pdf(disclaimer_text)
+    pdf.multi_cell(0, 6, clean_disclaimer)
     
     return pdf.output(dest='S').encode('latin-1')
 
@@ -859,6 +897,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
