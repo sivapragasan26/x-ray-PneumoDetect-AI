@@ -723,6 +723,7 @@ uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
 
 
 # 5. Results Section (Appears after Upload) - FIXED VERSION
+# 5. Results Section (Appears after Upload) - FIXED VERSION
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
@@ -734,16 +735,14 @@ if uploaded_file is not None:
         # Preview image
         st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True, output_format='PNG')
 
-
-# Analyze button - BETTER CENTERED with green styling
-st.markdown('<div style="display: flex; justify-content: center; margin: 30px 0;">', unsafe_allow_html=True)
-col1, col2, col3 = st.columns([1, 1, 1])
-with col2:
-    analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
-st.markdown('</div>', unsafe_allow_html=True)
-
-            
-        # FIXED: Store analysis results in session state
+        # Analyze button - BETTER CENTERED with green styling
+        st.markdown('<div style="display: flex; justify-content: center; margin: 30px 0;">', unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # FIXED: Store analysis results in session state (SINGLE COPY ONLY)
         if analyze:
             with st.spinner("🧠 AI Analysis in Progress..."):
                 t0 = time.time()
@@ -756,7 +755,8 @@ st.markdown('</div>', unsafe_allow_html=True)
                 st.session_state["analysis_time"] = elapsed
                 st.session_state["analyzed_image"] = image
 
-        # FIXED: Display results from session state (not just from button click)
+            
+
                   
       # FIXED: Display results from session state (not just from button click)
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
@@ -958,6 +958,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
