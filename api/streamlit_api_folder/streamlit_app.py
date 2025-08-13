@@ -809,140 +809,118 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
             # Apply white background using CSS class
             st.markdown('<div class="results-container-inner">', unsafe_allow_html=True)
             
-            # 1. MAIN DIAGNOSIS 
-
-            # 1. MAIN DIAGNOSIS WITH INTEGRATED PROGRESS BAR
-if res["diagnosis"] == "PNEUMONIA":
-    st.markdown(
-        f"""
-        <div style="
-            background: rgba(255,0,0,0.1);
-            border: 1px solid rgba(255,0,0,0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        ">
-            <h3 style="color: #d32f2f; margin-bottom: 10px;">🩺 DIAGNOSIS: PNEUMONIA DETECTED</h3>
-            <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
-            <p style="color: #ffffff; margin-bottom: 15px;"><strong>Recommendation:</strong> {res['recommendation']}</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    # PROGRESS BAR INSIDE THE RED BOX (using custom HTML for better control)
-    st.markdown(
-        f"""
-        <div style="
-            background: rgba(255,0,0,0.1);
-            border: 1px solid rgba(255,0,0,0.3);
-            border-radius: 12px;
-            padding: 0px 20px 20px 20px;
-            margin-top: -20px;
-            margin-bottom: 20px;
-        ">
-            <div style="
-                background-color: rgba(255,255,255,0.2);
-                border-radius: 8px;
-                height: 12px;
-                overflow: hidden;
-                margin-bottom: 8px;
-            ">
-                <div style="
-                    background-color: #d32f2f;
-                    height: 100%;
-                    width: {res['confidence']}%;
-                    border-radius: 8px;
-                    transition: width 0.5s ease;
-                "></div>
-            </div>
-            <div style="text-align: center; color: #ffffff; font-size: 13px; font-weight: 500;">
-                {res['confidence']}% Confidence Level
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        f"""
-        <div style="
-            background: rgba(0,255,0,0.1);
-            border: 1px solid rgba(0,255,0,0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        ">
-            <h3 style="color: #388e3c; margin-bottom: 10px;">✅ DIAGNOSIS: NORMAL CHEST X-RAY</h3>
-            <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
-            <p style="color: #ffffff; margin-bottom: 15px;"><strong>Recommendation:</strong> {res['recommendation']}</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    # PROGRESS BAR INSIDE THE GREEN BOX
-    st.markdown(
-        f"""
-        <div style="
-            background: rgba(0,255,0,0.1);
-            border: 1px solid rgba(0,255,0,0.3);
-            border-radius: 12px;
-            padding: 0px 20px 20px 20px;
-            margin-top: -20px;
-            margin-bottom: 20px;
-        ">
-            <div style="
-                background-color: rgba(255,255,255,0.2);
-                border-radius: 8px;
-                height: 12px;
-                overflow: hidden;
-                margin-bottom: 8px;
-            ">
-                <div style="
-                    background-color: #388e3c;
-                    height: 100%;
-                    width: {res['confidence']}%;
-                    border-radius: 8px;
-                    transition: width 0.5s ease;
-                "></div>
-            </div>
-            <div style="text-align: center; color: #ffffff; font-size: 13px; font-weight: 500;">
-                {res['confidence']}% Confidence Level
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# Remove the old separate confidence visualization section entirely
-
-         
-            
-            # Add confidence percentage below
+                    # 1. MAIN DIAGNOSIS WITH INTEGRATED PROGRESS BAR
+        if res["diagnosis"] == "PNEUMONIA":
             st.markdown(
-                f'<div style="text-align: center; color: #ffffff; font-size: 13px; margin-top: 8px; font-weight: 500;">{res["confidence"]}% Confidence Level</div>',
+                f"""
+                <div style="
+                    background: rgba(255,0,0,0.1);
+                    border: 1px solid rgba(255,0,0,0.3);
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                ">
+                    <h3 style="color: #d32f2f; margin-bottom: 10px;">🩺 DIAGNOSIS: PNEUMONIA DETECTED</h3>
+                    <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
+                    <p style="color: #ffffff; margin-bottom: 15px;"><strong>Recommendation:</strong> {res['recommendation']}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            # PROGRESS BAR INSIDE THE RED BOX
+            st.markdown(
+                f"""
+                <div style="
+                    background: rgba(255,0,0,0.1);
+                    border: 1px solid rgba(255,0,0,0.3);
+                    border-radius: 12px;
+                    padding: 0px 20px 20px 20px;
+                    margin-top: -20px;
+                    margin-bottom: 20px;
+                ">
+                    <div style="
+                        background-color: rgba(255,255,255,0.2);
+                        border-radius: 8px;
+                        height: 12px;
+                        overflow: hidden;
+                        margin-bottom: 8px;
+                    ">
+                        <div style="
+                            background-color: #d32f2f;
+                            height: 100%;
+                            width: {res['confidence']}%;
+                            border-radius: 8px;
+                            transition: width 0.5s ease;
+                        "></div>
+                    </div>
+                    <div style="text-align: center; color: #ffffff; font-size: 13px; font-weight: 500;">
+                        {res['confidence']}% Confidence Level
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"""
+                <div style="
+                    background: rgba(0,255,0,0.1);
+                    border: 1px solid rgba(0,255,0,0.3);
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                ">
+                    <h3 style="color: #388e3c; margin-bottom: 10px;">✅ DIAGNOSIS: NORMAL CHEST X-RAY</h3>
+                    <p style="color: #ffffff; margin-bottom: 8px;"><strong>Confidence:</strong> {res['confidence_level']} ({res['confidence']}%)</p>
+                    <p style="color: #ffffff; margin-bottom: 15px;"><strong>Recommendation:</strong> {res['recommendation']}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            # PROGRESS BAR INSIDE THE GREEN BOX
+            st.markdown(
+                f"""
+                <div style="
+                    background: rgba(0,255,0,0.1);
+                    border: 1px solid rgba(0,255,0,0.3);
+                    border-radius: 12px;
+                    padding: 0px 20px 20px 20px;
+                    margin-top: -20px;
+                    margin-bottom: 20px;
+                ">
+                    <div style="
+                        background-color: rgba(255,255,255,0.2);
+                        border-radius: 8px;
+                        height: 12px;
+                        overflow: hidden;
+                        margin-bottom: 8px;
+                    ">
+                        <div style="
+                            background-color: #388e3c;
+                            height: 100%;
+                            width: {res['confidence']}%;
+                            border-radius: 8px;
+                            transition: width 0.5s ease;
+                        "></div>
+                    </div>
+                    <div style="text-align: center; color: #ffffff; font-size: 13px; font-weight: 500;">
+                        {res['confidence']}% Confidence Level
+                    </div>
+                </div>
+                """,
                 unsafe_allow_html=True
             )
 
-            # 3. PDF GENERATION SECTION
-            st.markdown('<hr style="border: 1px solid rgba(0,0,0,0.1); margin: 20px 0;">', unsafe_allow_html=True)
-            
-            col1, col2 = st.columns([2, 1])
-            
-            with col1:
-                st.markdown('<p style="color: #ffffff; font-weight: 600; margin-bottom: 5px;">📄 Download Medical Report</p>', unsafe_allow_html=True)
-            
-            with col2:
-                if st.button("📄 Generate PDF", key="pdf_btn", help="Generate comprehensive medical analysis report"):
-                    with st.spinner("Generating PDF..."):
-                        pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
-                        filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
-                        download_link = create_pdf_download_link(pdf_data, filename)
-                        st.success("✅ PDF generated!")
-                        st.markdown(download_link, unsafe_allow_html=True)
-            
-            st.markdown('</div>', unsafe_allow_html=True)
+        # 3. PDF GENERATION SECTION
+        st.markdown('<hr style="border: 1px solid rgba(0,0,0,0.1); margin: 20px 0;">', unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.markdown('<p style="color: #ffffff; font-weight: 600; margin-bottom: 5px;">📄 Download Medical Report</p>', unsafe_allow_html=True)
+
 
 
 
@@ -1025,6 +1003,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
