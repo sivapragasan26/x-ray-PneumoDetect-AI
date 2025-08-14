@@ -457,10 +457,7 @@ st.markdown(
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         text-align: center;
     }
-    .stat-card:hover { 
-        transform: translateY(-8px); 
-        box-shadow: 0 25px 50px rgba(2,6,23,0.4); 
-    }
+   
     .stat-value { 
         font-size: 36px; 
         font-weight: 900; 
@@ -956,6 +953,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
