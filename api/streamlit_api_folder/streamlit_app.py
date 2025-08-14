@@ -785,10 +785,9 @@ if uploaded_file is not None:
         st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True)
         
         # Analyze button
-       # Analyze button - Centered approach
-st.markdown('<div style="display: flex; justify-content: center; margin: 20px 0;">', unsafe_allow_html=True)
-analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
-st.markdown('</div>', unsafe_allow_html=True)
+       col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
         # Analysis processing
         if analyze:
             with st.spinner("🧠 AI Analysis in Progress..."):
@@ -954,6 +953,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
