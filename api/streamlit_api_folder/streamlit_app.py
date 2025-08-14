@@ -776,6 +776,7 @@ st.markdown(
 
 
 # File uploader
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
 # Simple upload and preview
 if uploaded_file is not None:
     try:
@@ -1003,6 +1004,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
