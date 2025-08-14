@@ -782,15 +782,29 @@ uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
 # Simple upload and preview
 if uploaded_file is not None:
     try:
-        image = Image.open(uploaded_file)  # ✅ Exactly 8 spaces (same as other lines)
+        image = Image.open(uploaded_file)
         st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True)
         
-        # Analyze button
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
+        # Mobile-centered analyze button (properly indented)
+        st.markdown(
+            """
+            <style>
+            @media (max-width: 768px) {
+                .stButton {
+                    display: flex !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                }
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         
-        # Analysis processing
+        # Simplified button without columns (properly indented)
+        analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
+        
+        # Analysis processing (properly indented)
         if analyze:
             with st.spinner("🧠 AI Analysis in Progress..."):
                 t0 = time.time()
@@ -806,7 +820,8 @@ if uploaded_file is not None:
         st.error("⚠️ Unable to open image. Please upload a valid JPG/PNG file.")
 
 
-# Results display section
+
+
 # Results display section
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
     prediction_data = st.session_state["prediction_results"]
@@ -956,6 +971,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
