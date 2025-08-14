@@ -138,7 +138,7 @@ MODEL_SPECS = {
     "specificity": 74.8,
     "validation_samples": 485,
     "avg_prediction_time": "2.5 sec",
-    "total_scans": "800+",  # ADDED: New stat
+    "total_scans": "485+",  # ADDED: New stat
     "developer": "Ayushi Rathour",
     "supported_formats": ["JPG", "JPEG", "PNG"],
     "max_file_size_mb": 200
@@ -757,7 +757,7 @@ st.markdown(
         </div>
         <div class="stat-card">
             <div class="stat-value">📊 {MODEL_SPECS['total_scans']}</div>
-            <div class="stat-label">Scans Complete</div>
+            <div class="stat-label">Validated Samples</div>
         </div>
     </div>
     """,
@@ -956,6 +956,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
