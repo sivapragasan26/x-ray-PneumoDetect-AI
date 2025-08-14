@@ -447,16 +447,18 @@ st.markdown(
         gap: 24px;
         margin: 40px 0;
     }
-    .stat-card {
-        background: rgba(255,255,255,0.08);
-        border-radius: 20px;
-        padding: 30px;
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255,255,255,0.12);
-        box-shadow: 0 15px 35px rgba(2,6,23,0.3);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        text-align: center;
-    }
+  .stat-card {
+    background: rgba(0, 0, 0, 0.25);  
+    backdrop-filter: blur(30px); 
+    -webkit-backdrop-filter: blur(30px); 
+    border: none; 
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);  
+    text-align: center;
+   
+}
+
    
     .stat-value { 
         font-size: 36px; 
@@ -953,6 +955,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
