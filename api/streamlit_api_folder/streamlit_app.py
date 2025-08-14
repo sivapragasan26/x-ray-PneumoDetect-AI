@@ -778,61 +778,17 @@ st.markdown(
 # File uploader
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
 # Simple upload and preview
+# Back to basics - columns approach
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
         st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True)
         
-        # Universal button centering (properly indented)
-        st.markdown(
-            """
-            <style>
-            .stButton {
-                display: flex !important;
-                justify-content: center !important;
-                width: 100% !important;
-            }
-            
-            .stButton > button {
-                display: block !important;
-                margin: 0 auto !important;
-                text-align: center !important;
-            }
-            
-            @media (min-width: 1025px) {
-                .stButton {
-                    display: flex !important;
-                    justify-content: center !important;
-                    width: 100% !important;
-                }
-            }
-            
-            @media (min-width: 769px) and (max-width: 1024px) {
-                .stButton {
-                    display: flex !important;
-                    justify-content: center !important;
-                    width: 100% !important;
-                }
-            }
-            
-            @media (max-width: 768px) {
-                .stButton {
-                    display: flex !important;
-                    justify-content: center !important;
-                    width: 100% !important;
-                }
-                .stButton > button {
-                    max-width: 300px !important;
-                    min-width: 250px !important;
-                }
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
+        # Simple 3-column layout
+        left_col, center_col, right_col = st.columns([1, 1, 1])
         
-        # Single button call (remove duplicate)
-        analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
+        with center_col:
+            analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn", use_container_width=True)
         
         # Analysis processing
         if analyze:
@@ -848,6 +804,8 @@ if uploaded_file is not None:
                 
     except Exception:
         st.error("⚠️ Unable to open image. Please upload a valid JPG/PNG file.")
+
+
 
 
 
@@ -1004,6 +962,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
