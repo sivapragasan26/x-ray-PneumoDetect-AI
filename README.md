@@ -138,7 +138,7 @@ This system underwent **two-tier validation** to ensure reliable real-world perf
 *External ROC-AUC: 0.964 - Outstanding diagnostic discrimination capability*
 
 <details>
-<summary>📊 View All Validation Plots</summary>
+<summary>📊 View All Validation Plots(Click to expand)</summary>
 
 ![Internal Confusion Matrix](results/internal_validation/confusion_matrix.png)
 *Perfect specificity (0% false positives) on 269 test samples*
