@@ -745,7 +745,7 @@ st.markdown(
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-value">🎯 {int(MODEL_SPECS['accuracy'])}%</div>
-            <div class="stat-label">Accuracy</div>
+            <div class="stat-label">Accuracy Rate</div>
         </div>
         <div class="stat-card">
             <div class="stat-value">🔍 {MODEL_SPECS['sensitivity']}%</div>
@@ -956,6 +956,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
