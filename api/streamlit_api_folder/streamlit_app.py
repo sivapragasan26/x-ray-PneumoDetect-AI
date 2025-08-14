@@ -776,24 +776,53 @@ st.markdown(
 
 
 # File uploader
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
-
-# Simple upload and preview
 # Simple upload and preview
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
         st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True)
         
-        # Mobile-centered analyze button (properly indented)
+        # Universal button centering (properly indented)
         st.markdown(
             """
             <style>
+            .stButton {
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+            
+            .stButton > button {
+                display: block !important;
+                margin: 0 auto !important;
+                text-align: center !important;
+            }
+            
+            @media (min-width: 1025px) {
+                .stButton {
+                    display: flex !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                }
+            }
+            
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .stButton {
+                    display: flex !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                }
+            }
+            
             @media (max-width: 768px) {
                 .stButton {
                     display: flex !important;
                     justify-content: center !important;
                     width: 100% !important;
+                }
+                .stButton > button {
+                    max-width: 300px !important;
+                    min-width: 250px !important;
                 }
             }
             </style>
@@ -801,10 +830,10 @@ if uploaded_file is not None:
             unsafe_allow_html=True
         )
         
-        # Simplified button without columns (properly indented)
+        # Single button call (remove duplicate)
         analyze = st.button("🔬 Analyze X-Ray", key="analyze_btn")
         
-        # Analysis processing (properly indented)
+        # Analysis processing
         if analyze:
             with st.spinner("🧠 AI Analysis in Progress..."):
                 t0 = time.time()
@@ -818,6 +847,9 @@ if uploaded_file is not None:
                 
     except Exception:
         st.error("⚠️ Unable to open image. Please upload a valid JPG/PNG file.")
+
+
+
 
 
 
@@ -894,7 +926,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
 
 
 
-# 7. Medical Disclaimer - ENHANCED CENTERED
+# 7. Medical Disclaimer 
 st.markdown(
     """
     <div class="disclaimer-box" style="text-align: center;">
@@ -922,7 +954,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 9. Social Media Icons & Developer Credit (At the very end)
+# 9. Social Media Icons & Developer Credit 
 st.markdown(
     """
     <div class="social-section">
@@ -971,6 +1003,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
