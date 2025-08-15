@@ -55,6 +55,14 @@ def bulletproof_grad_cam_overlay(img_array, model):
         else:
             # Create artificial heatmap if gradients are flat
             heatmap = tf.ones_like(heatmap) * 0.5
+
+        # 🔍 ADD THESE 5 DEBUG LINES RIGHT HERE:
+        print(f"🔍 Gradients shape: {grads.shape}")
+        print(f"🔍 Gradients mean: {tf.reduce_mean(grads).numpy():.6f}")
+        print(f"🔍 Heatmap min: {heatmap.numpy().min():.6f}")
+        print(f"🔍 Heatmap max: {heatmap.numpy().max():.6f}")
+        print(f"🔍 Heatmap mean: {tf.reduce_mean(heatmap).numpy():.6f}")
+        
         
         # Resize to match input image
         heatmap_resized = tf.image.resize(heatmap[..., tf.newaxis], (224, 224)).numpy().squeeze()
@@ -1086,6 +1094,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
