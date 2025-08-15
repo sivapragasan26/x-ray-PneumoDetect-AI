@@ -998,43 +998,67 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
 
 
 
-
-# 3. PDF GENERATION SECTION (ENHANCED)
+# -------- PDF GENERATION SECTION (ENHANCED) --------
 pdf_col1, pdf_col2 = st.columns([1, 1])
 
 with pdf_col1:
-    if st.button("📄 Generate Enhanced PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report with images"):
+    if st.button("📄 Generate Enhanced PDF Report",
+                 key="pdf_btn",
+                 help="Generate comprehensive medical analysis report with images"):
+
         try:
             with st.spinner("Generating Enhanced PDF..."):
-                # Get images for PDF
-                original_img = st.session_state.get("original_for_pdf", st.session_state["analyzed_image"])
+                # Images for PDF
+                original_img = st.session_state.get("original_for_pdf",
+                                                    st.session_state["analyzed_image"])
                 ai_focus_img = st.session_state.get("attention_cam", None)
-                
-                # Generate enhanced PDF with images
+
+                # Build PDF
                 pdf_data = generate_medical_pdf_report(
-                    prediction_data, 
-                    elapsed, 
-                    original_image=original_img, 
+                    prediction_data,
+                    elapsed,
+                    original_image=original_img,
                     ai_focus_image=ai_focus_img
                 )
-                
+
                 filename = f"PneumoDetect_Enhanced_Report_{int(time.time())}.pdf"
                 download_link = create_pdf_download_link(pdf_data, filename)
-                
-                # Store in session state
+
+                # Save link in session state
                 st.session_state["pdf_generated"] = True
                 st.session_state["pdf_download_link"] = download_link
-                
+
         except Exception as e:
-            st.error(f"❌ Failed to generate enhanced PDF: {str(e)}")
-            st.info("💡 Please ensure you have generated the AI attention analysis first")
+            st.error(f"❌ Failed to generate enhanced PDF: {e}")
+            st.info("💡 Make sure you have generated the AI-focus overlay first.")
 
 with pdf_col2:
-    # Download link (same as before)
-    if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
-        st.markdown('<div style="text-align: right; padding-top: 8px;">', unsafe_allow_html=True)
-        st.markdown(st.session_state.get("pdf_download_link", ""), unsafe_allow_html=True)
+    if st.session_state.get("pdf_generated", False):
+        st.markdown(
+            '<div style="text-align: right; padding-top: 8px;">',
+            unsafe_allow_html=True
+        )
+        st.markdown(st.session_state["pdf_download_link"], unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ---------- DOWNLOAD-LINK HELPER ----------
+import base64
+
+def create_pdf_download_link(pdf_bytes: bytes, filename: str) -> str:
+    """
+    Return a clickable HTML link that lets the user download `pdf_bytes`
+    as `filename` inside Streamlit.
+    """
+    b64 = base64.b64encode(pdf_bytes).decode()     # bytes → base64
+    return (
+        f'<a href="data:application/pdf;base64,{b64}" '
+        f'download="{filename}" '
+        f'style="color:#74b9ff; font-weight:bold; text-decoration:none;">'
+        f'📄 Download Medical Report (PDF)</a>'
+    )
+
+
 
 
 
@@ -1115,6 +1139,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
