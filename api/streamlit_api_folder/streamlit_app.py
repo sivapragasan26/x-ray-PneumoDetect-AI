@@ -97,6 +97,11 @@ def load_pneumonia_model():
             continue
     return None
 
+if "pneumo_model" not in st.session_state:
+    st.session_state["pneumo_model"] = load_pneumonia_model()
+
+
+
 def preprocess_image(image_input):
     """
     Preprocess image for pneumonia detection model
@@ -912,14 +917,16 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 </div>
                 """, unsafe_allow_html=True)
 
-            # --- Grad-CAM button ---
-            if st.button("🔍 Show Grad-CAM"):
-                    # reuse already-loaded model & processed image
-                    proc_img = preprocess_image(st.session_state["analyzed_image"])
-                    cam_img  = grad_cam_overlay(proc_img, model, last_conv="Conv_1")
-                    st.image(cam_img, caption="Model focus (Grad-CAM)", 
-                             use_container_width=True)
+           #  Grad-CAM button
+                           if "pneumo_model" in st.session_state and "analyzed_image" in st.session_state:
+                                                      if st.button("🔍 Show Grad-CAM"):
+                                                          model = st.session_state["pneumo_model"]
+                                                          proc  = preprocess_image(st.session_state["analyzed_image"])
+                                                          cam   = grad_cam_overlay(proc, model, last_conv="Conv_1")
+                                                          st.image(cam, caption="Model focus (Grad-CAM)",
+                                                                   use_container_width=True)
 
+                                                                                                                                              
 
 
             # 2. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
@@ -1032,6 +1039,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
