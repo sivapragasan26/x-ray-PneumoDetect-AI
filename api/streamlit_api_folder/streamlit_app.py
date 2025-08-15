@@ -926,8 +926,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                      model = st.session_state["pneumo_model"]
                      proc  = preprocess_image(st.session_state["analyzed_image"])
                      cam   = grad_cam_overlay(proc, model, last_conv="Conv_1")
-                     st.image(cam, caption="Model focus (Grad-CAM)",
-                              use_container_width=True)
+                     st.image(cam, caption="Model focus (Grad-CAM)", use_container_width=True)
                                   
                                                       
 
@@ -1044,6 +1043,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
