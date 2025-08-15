@@ -14,6 +14,8 @@ import matplotlib.cm as cm
 
 def bulletproof_grad_cam_overlay(img_array, model):
     st.write("🔥 GRAD-CAM FUNCTION STARTED!")
+
+    debug_info = {}
     """
     Bulletproof Grad-CAM that GUARANTEES visible colored heatmap
     """
@@ -36,11 +38,13 @@ def bulletproof_grad_cam_overlay(img_array, model):
             loss = predictions[:, 0]
 
         grads = tape.gradient(loss, conv_outputs)
+
+        debug_info['Gradients shape'] = str(grads.shape)
+        debug_info['Gradients min'] = float(tf.reduce_min(grads).numpy())
+        debug_info['Gradients max'] = float(tf.reduce_max(grads).numpy())
+        debug_info['Gradients mean'] = float(tf.reduce_mean(grads).numpy())
         
-        st.write(f"🔍 Gradients min: {tf.reduce_min(grads).numpy():.6f}")
-        st.write(f"🔍 Gradients max: {tf.reduce_max(grads).numpy():.6f}")
-        st.write(f"🔍 Gradients mean: {tf.reduce_mean(grads).numpy():.6f}")
-            
+      
 
 
         
@@ -61,13 +65,13 @@ def bulletproof_grad_cam_overlay(img_array, model):
             heatmap = tf.ones_like(heatmap) * 0.5
 
         # 🔍 ADD THESE 5 DEBUG LINES RIGHT HERE:
-        st.write("🔍 **Grad-CAM Debug Info:**")
-        st.write(f"**Gradients shape:** {grads.shape}")
-        st.write(f"**Gradients mean:** {tf.reduce_mean(grads).numpy():.6f}")
-        st.write(f"**Heatmap min:** {heatmap.numpy().min():.6f}")
-        st.write(f"**Heatmap max:** {heatmap.numpy().max():.6f}")
-        st.write(f"**Heatmap mean:** {tf.reduce_mean(heatmap).numpy():.6f}")
+        debug_info['Heatmap min'] = float(heatmap.numpy().min())
+        debug_info['Heatmap max'] = float(heatmap.numpy().max())
+        debug_info['Heatmap mean'] = float(tf.reduce_mean(heatmap).numpy())
+        debug_info['Max val before norm'] = float(max_val.numpy())
         
+        # SAVE DEBUG INFO TO SESSION STATE
+        st.session_state["grad_cam_debug"] = debug_info
         
         # Resize to match input image
         heatmap_resized = tf.image.resize(heatmap[..., tf.newaxis], (224, 224)).numpy().squeeze()
@@ -87,7 +91,9 @@ def bulletproof_grad_cam_overlay(img_array, model):
         return Image.fromarray(overlay)
         
     except Exception as e:
-        print(f"Grad-CAM error: {e}")
+        debug_info['ERROR'] = str(e)
+        st.session_state["grad_cam_debug"] = debug_info
+        st.error(f"Grad-CAM error: {e}")
         return Image.fromarray((img_array[0] * 255).astype(np.uint8))
 
 
@@ -1101,6 +1107,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
