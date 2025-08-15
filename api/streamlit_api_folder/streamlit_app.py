@@ -12,33 +12,62 @@ from datetime import datetime
 import pydicom
 import matplotlib.cm as cm
 
-def grad_cam_overlay(img_array, model, last_conv="mobilenetv2_1.00_224"):
+def safe_grad_cam_overlay(img_array, model):
     """
     Return a PIL image with Grad-CAM heat-map blended on top.
-    Pure TF / NumPy / Pillow – no OpenCV needed.
+    Auto-detects last conv layer and avoids crashes.
     """
-    # Build sub-model
-    grad_model = tf.keras.models.Model(
-        [model.inputs],
-        [model.get_layer(last_conv).output, model.output],
-    )
-    with tf.GradientTape() as tape:
-        conv_out, preds = grad_model(img_array)
-        loss = preds[:, 0]                       # class index 0
-    grads = tape.gradient(loss, conv_out)
-    weights = tf.reduce_mean(grads, axis=(1, 2))
-    cam = tf.reduce_sum(weights * conv_out, axis=-1)[0]
+    try:
+        # Auto-detect last conv layer
+        possible_names = [
+            'Conv_1_bn', 'Conv_1_relu', 'block_16_project_BN', 'out_relu',
+            'block_15_project_BN', 'block_16_depthwise_BN'
+        ]
+        layer_names = [layer.name for layer in model.layers]
+        last_conv = None
+        for name in possible_names:
+            if name in layer_names:
+                last_conv = name
+                break
 
-    cam = np.maximum(cam, 0)
-    cam /= cam.max() + 1e-8                     # 0-1
-    cam = tf.image.resize(cam[..., tf.newaxis], (224, 224)).numpy().squeeze()
+        # Fallback if none found
+        if last_conv is None:
+            conv_layers = [l.name for l in model.layers if 'conv' in l.name or 'bn' in l.name]
+            if conv_layers:
+                last_conv = conv_layers[-1]
+            else:
+                last_conv = model.layers[-4].name
 
-    # Colorize via matplotlib
-    heatmap = (cm.get_cmap("jet")(cam)[:, :, :3] * 255).astype(np.uint8)
-    base    = (img_array[0] * 255).astype(np.uint8)
-    overlay = (0.6 * base + 0.4 * heatmap).astype(np.uint8)
+        # Build sub-model
+        grad_model = tf.keras.models.Model(
+            [model.inputs],
+            [model.get_layer(last_conv).output, model.output],
+        )
 
-    return Image.fromarray(overlay)
+        with tf.GradientTape() as tape:
+            conv_out, preds = grad_model(img_array)
+            loss = preds[:, 0]
+
+        grads = tape.gradient(loss, conv_out)
+        weights = tf.reduce_mean(grads, axis=(1, 2))
+        cam = tf.reduce_sum(weights * conv_out, axis=-1)[0]
+        cam = tf.nn.relu(cam)
+
+        cam_max = tf.reduce_max(cam)
+        if cam_max > 0:
+            cam = cam / cam_max
+
+        cam_resized = tf.image.resize(cam[..., tf.newaxis], (224, 224)).numpy().squeeze()
+
+        heatmap = (cm.get_cmap("jet")(cam_resized)[:, :, :3] * 255).astype(np.uint8)
+        base = (img_array[0] * 255).astype(np.uint8)
+        overlay = (0.6 * base + 0.4 * heatmap).astype(np.uint8)
+
+        return Image.fromarray(overlay)
+
+    except Exception as e:
+        print(f"Grad-CAM generation failed: {e}")
+        return Image.fromarray((img_array[0] * 255).astype(np.uint8))
 
 
 def dicom_to_pil_image(dicom_bytes):
@@ -932,7 +961,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 if st.button("🔍 Show Grad-CAM"):
                     model = st.session_state["pneumo_model"]
                     proc  = preprocess_image(st.session_state["analyzed_image"])
-                    cam   = grad_cam_overlay(proc, model, last_conv="mobilenetv2_1.00_224")
+                    cam   = grad_cam_overlay(proc, model)
                     st.image(cam, caption="Model focus (Grad-CAM)", use_container_width=True)
 
             # 3. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
@@ -1049,6 +1078,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
