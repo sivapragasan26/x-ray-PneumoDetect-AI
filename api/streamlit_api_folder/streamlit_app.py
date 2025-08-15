@@ -893,6 +893,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
 
 # Use native Streamlit container with border styling
 with st.container(border=True):
+    res = prediction_data["result"]
 
     # 1. DIAGNOSIS CONTAINERS
     if res["diagnosis"] == "PNEUMONIA":
@@ -1045,6 +1046,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
