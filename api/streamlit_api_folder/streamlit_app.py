@@ -947,12 +947,17 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 """, unsafe_allow_html=True)
 
             # 2. AI Focus BUTTON
-            if st.button("🔍 Show AI Focus"):
-                model = st.session_state["pneumo_model"]
-                proc = preprocess_image(st.session_state["analyzed_image"])
-                attention_cam = simple_attention_overlay(proc, model)
-                st.image(attention_cam, caption="AI Attention Areas", use_container_width=True)
-   
+            
+            left_col, center_col, right_col = st.columns([1, 2, 1])
+
+            with center_col:
+                if st.button("🔍 Show AI Focus", use_container_width=True):
+                    model = st.session_state["pneumo_model"]
+                    proc = preprocess_image(st.session_state["analyzed_image"])
+                    attention_cam = simple_attention_overlay(proc, model)
+                    st.image(attention_cam, caption="AI Attention Areas", use_container_width=True)
+        
+            
 
 
             # 3. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
@@ -1070,6 +1075,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
