@@ -96,9 +96,10 @@ def load_pneumonia_model():
         except Exception:
             continue
     return None
+    if "pneumo_model" not in st.session_state:
+        st.session_state["pneumo_model"] = load_pneumonia_model()
 
-if "pneumo_model" not in st.session_state:
-    st.session_state["pneumo_model"] = load_pneumonia_model()
+
 
 
 
@@ -1039,6 +1040,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
