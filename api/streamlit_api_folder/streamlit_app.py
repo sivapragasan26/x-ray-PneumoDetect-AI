@@ -234,23 +234,22 @@ def simple_attention_overlay(img_array, model):
         return Image.fromarray((img_array[0] * 255).astype(np.uint8))
 
 
+# -----------------------------
+#  PDF GENERATION WITH IMAGES
+# -----------------------------
 
-# -----------------------------
-# PDF GENERATION FUNCTIONS (NEW - ADD THIS SECTION)
-# -----------------------------
-def generate_medical_pdf_report(prediction_result, analysis_time):
+
+def generate_medical_pdf_report(prediction_result, analysis_time, original_image=None, ai_focus_image=None):
     """
-    Generate professional medical PDF report (Unicode-safe + Version-safe)
+    Generate professional medical PDF report with both original and AI focus images
+    100% Streamlit-friendly and error-free
     """
     
     def clean_text_for_pdf(text):
-        """
-        Clean text to remove Unicode characters that cause PDF errors
-        """
+        """Clean text to remove Unicode characters that cause PDF errors"""
         if not text:
             return ""
         
-        # Replace problematic Unicode characters
         replacements = {
             # Smart quotes to regular quotes
             '"': '"', '"': '"', ''': "'", ''': "'",
@@ -271,80 +270,118 @@ def generate_medical_pdf_report(prediction_result, analysis_time):
         
         # Remove any remaining non-ASCII characters
         cleaned_text = cleaned_text.encode('ascii', 'ignore').decode('ascii')
-        
         return cleaned_text
     
     pdf = FPDF()
     pdf.add_page()
     
     # Header
-    pdf.set_font('Arial', 'B', 16)
-    pdf.cell(0, 10, 'PneumoDetect AI - Medical Analysis Report', 0, 1, 'C')
-    pdf.ln(10)
+    pdf.set_font('Arial', 'B', 18)
+    pdf.cell(0, 12, 'PneumoDetect AI - Medical Analysis Report', 0, 1, 'C')
+    pdf.ln(5)
     
-    # Report Details
-    pdf.set_font('Arial', 'B', 12)
+    # Report Details Section
+    pdf.set_font('Arial', 'B', 14)
     pdf.cell(0, 10, 'Report Information:', 0, 1)
-    pdf.set_font('Arial', '', 10)
+    pdf.set_font('Arial', '', 11)
     pdf.cell(0, 8, f'Date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}', 0, 1)
     pdf.cell(0, 8, f'Model: {MODEL_SPECS["name"]} {MODEL_SPECS["version"]}', 0, 1)
     pdf.cell(0, 8, f'Architecture: {MODEL_SPECS["architecture"]}', 0, 1)
     pdf.cell(0, 8, f'Analysis Time: {analysis_time:.2f} seconds', 0, 1)
-    pdf.ln(5)
+    pdf.ln(8)
     
-    # Analysis Results
+    # Analysis Results Section
     result = prediction_result['result']
-    pdf.set_font('Arial', 'B', 12)
+    pdf.set_font('Arial', 'B', 14)
     pdf.cell(0, 10, 'Analysis Results:', 0, 1)
-    pdf.set_font('Arial', '', 10)
+    pdf.set_font('Arial', '', 11)
     pdf.cell(0, 8, f'Diagnosis: {clean_text_for_pdf(result["diagnosis"])}', 0, 1)
     pdf.cell(0, 8, f'Confidence: {result["confidence"]}%', 0, 1)
     pdf.cell(0, 8, f'Confidence Level: {clean_text_for_pdf(result["confidence_level"])}', 0, 1)
-    pdf.ln(5)
+    pdf.ln(8)
     
-    # Recommendation - FIXED (Unicode-safe)
-    pdf.set_font('Arial', 'B', 12)
+    # Recommendation Section
+    pdf.set_font('Arial', 'B', 14)
     pdf.cell(0, 10, 'Recommendation:', 0, 1)
-    pdf.set_font('Arial', '', 10)
-    
-    # Clean the recommendation text before adding to PDF
+    pdf.set_font('Arial', '', 11)
     clean_recommendation = clean_text_for_pdf(result["recommendation"])
     pdf.multi_cell(0, 8, clean_recommendation)
-    pdf.ln(5)
+    pdf.ln(8)
     
-    # Technical Details
-    pdf.set_font('Arial', 'B', 12)
+    # Images Section
+    if original_image and ai_focus_image:
+        pdf.set_font('Arial', 'B', 14)
+        pdf.cell(0, 10, 'Medical Images:', 0, 1)
+        pdf.ln(2)
+        
+        # Save images temporarily for PDF
+        try:
+            # Convert PIL images to temporary byte streams
+            original_bytes = io.BytesIO()
+            original_image.save(original_bytes, format='PNG')
+            original_bytes.seek(0)
+            
+            ai_focus_bytes = io.BytesIO()
+            ai_focus_image.save(ai_focus_bytes, format='PNG')
+            ai_focus_bytes.seek(0)
+            
+            # Add captions
+            pdf.set_font('Arial', 'B', 10)
+            pdf.cell(85, 6, 'Original Chest X-Ray', 0, 0, 'C')
+            pdf.cell(85, 6, 'AI Attention Analysis', 0, 1, 'C')
+            
+            # Add images side by side
+            current_y = pdf.get_y()
+            pdf.image(original_bytes, x=15, y=current_y, w=80)
+            pdf.image(ai_focus_bytes, x=110, y=current_y, w=80)
+            
+            # Move cursor below images
+            pdf.ln(65)
+            
+        except Exception as e:
+            pdf.set_font('Arial', '', 10)
+            pdf.cell(0, 8, f'Images could not be embedded: {str(e)}', 0, 1)
+            pdf.ln(5)
+    
+    # Technical Details Section
+    pdf.set_font('Arial', 'B', 14)
     pdf.cell(0, 10, 'Technical Details:', 0, 1)
-    pdf.set_font('Arial', '', 10)
+    pdf.set_font('Arial', '', 11)
     pdf.cell(0, 8, f'Raw Score: {result["raw_score"]:.4f}', 0, 1)
     pdf.cell(0, 8, f'Decision Threshold: {result["threshold"]}', 0, 1)
     pdf.cell(0, 8, f'Model Accuracy: {MODEL_SPECS["accuracy"]}%', 0, 1)
     pdf.cell(0, 8, f'Model Sensitivity: {MODEL_SPECS["sensitivity"]}%', 0, 1)
     pdf.ln(10)
     
-    # Medical Disclaimer
-    pdf.set_font('Arial', 'B', 10)
-    pdf.cell(0, 8, 'MEDICAL DISCLAIMER:', 0, 1)
-    pdf.set_font('Arial', '', 8)
+    # AI Attention Explanation
+    if ai_focus_image:
+        pdf.set_font('Arial', 'B', 14)
+        pdf.cell(0, 10, 'AI Attention Explanation:', 0, 1)
+        pdf.set_font('Arial', '', 10)
+        attention_explanation = "The AI Attention Analysis shows areas where the artificial intelligence model focused during diagnosis. Red and yellow regions indicate high attention areas, while blue regions show lower focus areas. This visualization helps understand the AI's decision-making process."
+        pdf.multi_cell(0, 6, attention_explanation)
+        pdf.ln(8)
     
+    # Medical Disclaimer
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 8, 'MEDICAL DISCLAIMER:', 0, 1)
+    pdf.set_font('Arial', '', 9)
     disclaimer_text = 'This AI analysis is for preliminary screening purposes only. Always seek advice from qualified healthcare professionals before making medical decisions. This tool is not approved for clinical diagnosis.'
     clean_disclaimer = clean_text_for_pdf(disclaimer_text)
     pdf.multi_cell(0, 6, clean_disclaimer)
     
-    # FIXED: Version-safe return statement
+    # Footer
+    pdf.ln(5)
+    pdf.set_font('Arial', 'I', 8)
+    pdf.cell(0, 6, f'Generated by {MODEL_SPECS["name"]} - AI-Powered Pneumonia Detection System', 0, 1, 'C')
+    
+    # Return PDF bytes (version-safe)
     pdf_output = pdf.output(dest='S')
     if isinstance(pdf_output, str):
         return pdf_output.encode('latin-1')
     else:
-        return pdf_output  # Already bytes
-        
-def create_pdf_download_link(pdf_data, filename):
-    """
-    Create download link for PDF file
-    """
-    b64 = base64.b64encode(pdf_data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}" style="color: #74b9ff; text-decoration: none; font-weight: bold;">📄 Download Medical Report (PDF)</a>'
-    return href
+        return pdf_output
+
 
 
 
@@ -960,41 +997,44 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
             
 
 
-            # 3. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
-            pdf_col1, pdf_col2 = st.columns([1, 1])
-
-            with pdf_col1:
-                # Generate PDF button (only visible after successful analysis)
-                if st.button("📄 Generate PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report"):
-                    try:
-                        with st.spinner("Generating PDF..."):
-                            # Generate PDF using session state data
-                            pdf_data = generate_medical_pdf_report(prediction_data, elapsed)
-                            filename = f"PneumoDetect_Report_{int(time.time())}.pdf"
-                            
-                            # Create download link
-                            download_link = create_pdf_download_link(pdf_data, filename)
-                            
-                            # Store in session state
-                            st.session_state["pdf_generated"] = True
-                            st.session_state["pdf_download_link"] = download_link
-                            
-                    except Exception as e:
-                        st.error(f"❌ Failed to generate PDF: {str(e)}")
-                        st.info("💡 Please try analyzing the X-ray again")
-
-            with pdf_col2:
-                # Download link on RIGHT (appears after PDF generation)
-                if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
-                    st.markdown('<div style="text-align: right; padding-top: 8px;">', unsafe_allow_html=True)
-                    st.markdown(st.session_state.get("pdf_download_link", ""), unsafe_allow_html=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
 
 
+# 3. PDF GENERATION SECTION (ENHANCED)
+pdf_col1, pdf_col2 = st.columns([1, 1])
 
+with pdf_col1:
+    if st.button("📄 Generate Enhanced PDF Report", key="pdf_btn", help="Generate comprehensive medical analysis report with images"):
+        try:
+            with st.spinner("Generating Enhanced PDF..."):
+                # Get images for PDF
+                original_img = st.session_state.get("original_for_pdf", st.session_state["analyzed_image"])
+                ai_focus_img = st.session_state.get("attention_cam", None)
+                
+                # Generate enhanced PDF with images
+                pdf_data = generate_medical_pdf_report(
+                    prediction_data, 
+                    elapsed, 
+                    original_image=original_img, 
+                    ai_focus_image=ai_focus_img
+                )
+                
+                filename = f"PneumoDetect_Enhanced_Report_{int(time.time())}.pdf"
+                download_link = create_pdf_download_link(pdf_data, filename)
+                
+                # Store in session state
+                st.session_state["pdf_generated"] = True
+                st.session_state["pdf_download_link"] = download_link
+                
+        except Exception as e:
+            st.error(f"❌ Failed to generate enhanced PDF: {str(e)}")
+            st.info("💡 Please ensure you have generated the AI attention analysis first")
 
-        
-
+with pdf_col2:
+    # Download link (same as before)
+    if "pdf_generated" in st.session_state and st.session_state.get("pdf_generated", False):
+        st.markdown('<div style="text-align: right; padding-top: 8px;">', unsafe_allow_html=True)
+        st.markdown(st.session_state.get("pdf_download_link", ""), unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -1075,6 +1115,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
