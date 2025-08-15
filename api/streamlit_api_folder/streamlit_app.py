@@ -13,6 +13,17 @@ from datetime import datetime
 import pydicom
 import matplotlib.cm as cm
 
+def create_pdf_download_link(pdf_bytes: bytes, filename: str) -> str:
+    """
+    Return an HTML link that lets the user download 'pdf_bytes' as 'filename' inside Streamlit.
+    """
+    b64 = base64.b64encode(pdf_bytes).decode()
+    return (
+        f'<a href="data:application/pdf;base64,{b64}" '
+        f'download="{filename}" '
+        f'style="color:#74b9ff; font-weight:bold; text-decoration:none;">'
+        f'Download Medical Report (PDF)</a>'
+    )
 
 def dicom_to_pil_image(dicom_bytes):
     """
@@ -1042,21 +1053,6 @@ with pdf_col2:
         st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ---------- DOWNLOAD-LINK HELPER ----------
-import base64             # keep this near your other imports
-
-def create_pdf_download_link(pdf_bytes: bytes, filename: str) -> str:
-    """
-    Build a clickable HTML link for downloading `pdf_bytes`
-    as `filename` inside Streamlit.
-    """
-    b64 = base64.b64encode(pdf_bytes).decode()      # bytes → base-64
-    return (
-        f'<a href="data:application/pdf;base64,{b64}" '
-        f'download="{filename}" '
-        f'style="color:#74b9ff; font-weight:bold; text-decoration:none;">'
-        f'📄 Download Medical Report (PDF)</a>'
-    )
 
 
 
@@ -1140,6 +1136,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
