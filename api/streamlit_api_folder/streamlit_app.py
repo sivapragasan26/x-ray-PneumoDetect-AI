@@ -19,11 +19,7 @@ def bulletproof_grad_cam_overlay(img_array, model):
     """
     try:
         # Find last convolutional layer automatically
-        last_conv = None
-        for layer in reversed(model.layers):
-            if len(layer.output_shape) == 4:  # Conv layer
-                last_conv = layer.name
-                break
+        last_conv = "block_16_project_BN"
         
         if last_conv is None:
             raise ValueError("No convolutional layer found")
@@ -40,6 +36,13 @@ def bulletproof_grad_cam_overlay(img_array, model):
             loss = predictions[:, 0]
 
         grads = tape.gradient(loss, conv_outputs)
+        
+        st.write(f"🔍 Gradients min: {tf.reduce_min(grads).numpy():.6f}")
+        st.write(f"🔍 Gradients max: {tf.reduce_max(grads).numpy():.6f}")
+        st.write(f"🔍 Gradients mean: {tf.reduce_mean(grads).numpy():.6f}")
+            
+
+
         
         # Pool gradients globally
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
@@ -76,7 +79,8 @@ def bulletproof_grad_cam_overlay(img_array, model):
         base_image = (img_array[0] * 255).astype(np.uint8)
         
         # STRONG BLEND for maximum visibility
-        overlay = (0.5 * base_image + 0.5 * colormap).astype(np.uint8)
+        overlay = (0.3 * base_image + 0.7 * colormap).astype(np.uint8)  # 70% heatmap
+
         
         print(f"✅ Heatmap created! Range: {heatmap_resized.min():.3f} to {heatmap_resized.max():.3f}")
         
@@ -1097,6 +1101,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
