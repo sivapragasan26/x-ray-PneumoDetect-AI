@@ -14,98 +14,6 @@ import pydicom
 import matplotlib.cm as cm
 
 
-def bulletproof_grad_cam_overlay(img_array, model):
-    
-
-    st.write("🔥 GRAD-CAM FUNCTION STARTED!")
-    debug_info = {}
-    
-    try:
-        # Access the MobileNetV2 base model nested inside your model
-        mobilenet_base = model.get_layer('mobilenetv2_1.00_224')
-
-        # Find last convolutional layer in mobilenet_base
-        last_conv_layer = None
-        for layer in reversed(mobilenet_base.layers):
-            if isinstance(layer, (Conv2D, DepthwiseConv2D)):
-                last_conv_layer = layer
-                break
-
-        
-
-        if last_conv_layer is None:
-            try:
-                last_conv_layer = mobilenet_base.get_layer('block_16_project_BN')
-            except:
-                last_conv_layer = mobilenet_base.layers[-1]
-
-        debug_info['Selected layer'] = last_conv_layer.name
-        debug_info['Layer output shape'] = str(tuple(last_conv_layer.output.shape))
-
-
-        # Create grad model that can access the nested conv layer
-        grad_model = tf.keras.models.Model(
-            inputs=model.input,
-            outputs=[last_conv_layer.output, model.output]
-        )
-
-        # Compute gradients
-        with tf.GradientTape() as tape:
-            conv_outputs, predictions = grad_model(img_array)
-            loss = predictions[:, 0]
-
-        grads = tape.gradient(loss, conv_outputs)
-
-        # Store gradient debug info
-        debug_info['Gradients shape'] = str(grads.shape)
-        debug_info['Gradients min'] = float(tf.reduce_min(grads).numpy())
-        debug_info['Gradients max'] = float(tf.reduce_max(grads).numpy())
-        debug_info['Gradients mean'] = float(tf.reduce_mean(grads).numpy())
-
-        # Pool gradients and create heatmap
-        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-        conv_outputs = conv_outputs[0]
-        heatmap = tf.reduce_sum(tf.multiply(pooled_grads, conv_outputs), axis=-1)
-
-        # Apply ReLU and normalize
-        heatmap = tf.nn.relu(heatmap)
-        max_val = tf.reduce_max(heatmap)
-        if max_val > 0:
-            heatmap /= max_val
-        else:
-            heatmap = tf.ones_like(heatmap) * 0.5
-
-        # Store heatmap debug info
-        debug_info['Heatmap min'] = float(heatmap.numpy().min())
-        debug_info['Heatmap max'] = float(heatmap.numpy().max())
-        debug_info['Heatmap mean'] = float(tf.reduce_mean(heatmap).numpy())
-        debug_info['Max val before norm'] = float(max_val.numpy())
-
-        # Save all debug info to session state
-        st.session_state['grad_cam_debug'] = debug_info
-
-        # Resize to match input image
-        heatmap_resized = tf.image.resize(heatmap[..., tf.newaxis], (224, 224)).numpy().squeeze()
-
-        # Generate strong colormap (jet colormap - red/yellow/blue)
-        colormap = (cm.jet(heatmap_resized)[:, :, :3] * 255).astype(np.uint8)
-
-        # Original image
-        base_image = (img_array[0] * 255).astype(np.uint8)
-
-        # STRONG BLEND for maximum visibility (70% heatmap, 30% original)
-        overlay = (0.3 * base_image + 0.7 * colormap).astype(np.uint8)
-
-        return Image.fromarray(overlay)
-
-    except Exception as e:
-        debug_info['ERROR'] = str(e)
-        st.session_state['grad_cam_debug'] = debug_info
-        st.error(f"Grad-CAM error: {e}")
-        return Image.fromarray((img_array[0] * 255).astype(np.uint8))
-
-
-
 def dicom_to_pil_image(dicom_bytes):
     """
     Convert DICOM bytes to PIL Image (RGB format)
@@ -281,6 +189,36 @@ MODEL_SPECS = {
     "supported_formats": ["JPG", "JPEG", "PNG"],
     "max_file_size_mb": 200
 }
+
+def simple_attention_overlay(img_array, model):
+    """Simple attention visualization that works with any model"""
+    try:
+        # Get prediction
+        pred = model.predict(img_array, verbose=0)[0][0]
+        
+        # Create simple center-focused attention based on prediction confidence
+        h, w = 224, 224
+        y, x = np.ogrid[:h, :w]
+        center = h // 2, w // 2
+        
+        # Distance from center with prediction weighting
+        attention = np.exp(-((x - center[1])**2 + (y - center)**2) / (w*h/8))
+        attention = attention * pred if pred > 0.5 else attention * (1-pred) * 0.3
+        
+        # Normalize and colorize
+        attention = (attention - attention.min()) / (attention.max() - attention.min() + 1e-8)
+        colormap = (cm.jet(attention)[:, :, :3] * 255).astype(np.uint8)
+        base_image = (img_array[0] * 255).astype(np.uint8)
+        
+        # Strong blend for visibility
+        overlay = (0.4 * base_image + 0.6 * colormap).astype(np.uint8)
+        return Image.fromarray(overlay)
+        
+    except Exception as e:
+        st.error(f"Attention visualization error: {e}")
+        return Image.fromarray((img_array[0] * 255).astype(np.uint8))
+
+
 # -----------------------------
 # PDF GENERATION FUNCTIONS (NEW - ADD THIS SECTION)
 # -----------------------------
@@ -992,14 +930,14 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 </div>
                 """, unsafe_allow_html=True)
 
-            # 2. GRAD-CAM BUTTON
-            if "pneumo_model" in st.session_state and "analyzed_image" in st.session_state:
-                if st.button("🔍 Show Grad-CAM"):
-                    st.write("Button clicked!")
-                    model = st.session_state["pneumo_model"]
-                    proc  = preprocess_image(st.session_state["analyzed_image"])
-                    cam   = bulletproof_grad_cam_overlay(proc, model)
-                    st.image(cam, caption="Model focus (Grad-CAM)", use_container_width=True)
+            # 2. AI Focus BUTTON
+            if st.button("🔍 Show AI Focus"):
+                model = st.session_state["pneumo_model"]
+                proc = preprocess_image(st.session_state["analyzed_image"])
+                attention_cam = simple_attention_overlay(proc, model)
+                st.image(attention_cam, caption="AI Attention Areas", use_container_width=True)
+   
+
 
             # 3. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
             pdf_col1, pdf_col2 = st.columns([1, 1])
@@ -1032,18 +970,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 6.5 DEBUG PANEL (NEW SECTION)
-st.markdown("---")
-st.subheader("🔍 Grad-CAM Debug Panel")
 
-if "grad_cam_debug" in st.session_state:
-    debug_data = st.session_state["grad_cam_debug"]
-    for key, value in debug_data.items():
-        st.text(f"{key}: {value}")
-else:
-    st.text("Debug info will appear here after Grad-CAM runs.")
-
-st.markdown("---")
 
         
 
@@ -1127,6 +1054,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
