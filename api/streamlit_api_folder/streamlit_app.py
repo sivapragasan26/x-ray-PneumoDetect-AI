@@ -12,7 +12,7 @@ from datetime import datetime
 import pydicom
 import matplotlib.cm as cm
 
-def grad_cam_overlay(img_array, model, last_conv="Conv_1"):
+def grad_cam_overlay(img_array, model, last_conv="mobilenetv2_1.00_224"):
     """
     Return a PIL image with Grad-CAM heat-map blended on top.
     Pure TF / NumPy / Pillow – no OpenCV needed.
@@ -930,7 +930,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 if st.button("🔍 Show Grad-CAM"):
                     model = st.session_state["pneumo_model"]
                     proc  = preprocess_image(st.session_state["analyzed_image"])
-                    cam   = grad_cam_overlay(proc, model, last_conv="Conv_1")
+                    cam   = grad_cam_overlay(proc, model, last_conv="mobilenetv2_1.00_224")
                     st.image(cam, caption="Model focus (Grad-CAM)", use_container_width=True)
 
             # 3. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
@@ -1047,6 +1047,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
