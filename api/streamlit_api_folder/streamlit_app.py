@@ -9,6 +9,38 @@ from PIL import Image as PILImage
 import base64
 from fpdf import FPDF
 from datetime import datetime
+import pydicom
+
+
+def dicom_to_pil_image(dicom_bytes):
+    """
+    Convert DICOM bytes to PIL Image (RGB format)
+    Compatible with your existing preprocess_image function
+    """
+    try:
+        # Read DICOM from bytes
+        dicom_file = pydicom.dcmread(io.BytesIO(dicom_bytes))
+        
+        # Extract pixel array (grayscale medical image)
+        pixel_array = dicom_file.pixel_array
+        
+        # Normalize to 0-255 range and convert to uint8
+        pixel_min = pixel_array.min()
+        pixel_max = pixel_array.max()
+        
+        if pixel_max > pixel_min:  # Avoid division by zero
+            normalized = (255 * (pixel_array - pixel_min) / (pixel_max - pixel_min)).astype(np.uint8)
+        else:
+            normalized = pixel_array.astype(np.uint8)
+        
+        # Convert grayscale to RGB (your model expects RGB)
+        pil_image = Image.fromarray(normalized).convert('RGB')
+        
+        return pil_image
+        
+    except Exception as e:
+        raise Exception(f"Failed to process DICOM file: {str(e)}")
+
 
 
 # -----------------------------
@@ -776,13 +808,18 @@ st.markdown(
 
 
 # File uploader
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="upload")
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "dcm"], key="upload")
+
 # Simple upload and preview
-# Back to basics - columns approach
 if uploaded_file is not None:
     try:
-        image = Image.open(uploaded_file)
-        st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True)
+        # Check if it's a DICOM file
+        if uploaded_file.name.lower().endswith('.dcm'):
+            image = dicom_to_pil_image(uploaded_file.read())
+            st.image(image, caption="🖼️ Uploaded DICOM Chest X-Ray - Ready for Analysis", use_container_width=True)
+        else:
+            image = Image.open(uploaded_file)
+            st.image(image, caption="🖼️ Uploaded Chest X-Ray - Ready for Analysis", use_container_width=True)
         
         # Simple 3-column layout
         left_col, center_col, right_col = st.columns([1, 1, 1])
@@ -802,14 +839,8 @@ if uploaded_file is not None:
                 st.session_state["analysis_time"] = elapsed
                 st.session_state["analyzed_image"] = image
                 
-    except Exception:
-        st.error("⚠️ Unable to open image. Please upload a valid JPG/PNG file.")
-
-
-
-
-
-
+    except Exception as e:  # ← This needs to be aligned with the 'try'
+        st.error(f"⚠️ Unable to process file: {str(e)}. Please upload a valid JPG/PNG/DCM file.")
 
 
 
@@ -962,6 +993,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
