@@ -40,7 +40,8 @@ def bulletproof_grad_cam_overlay(img_array, model):
                 last_conv_layer = mobilenet_base.layers[-1]
 
         debug_info['Selected layer'] = last_conv_layer.name
-        debug_info['Layer output shape'] = str(last_conv_layer.output_shape)
+        debug_info['Layer output shape'] = str(tuple(last_conv_layer.output.shape))
+
 
         # Create grad model that can access the nested conv layer
         grad_model = tf.keras.models.Model(
@@ -1126,6 +1127,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
