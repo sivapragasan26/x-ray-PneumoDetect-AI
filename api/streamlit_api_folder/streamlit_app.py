@@ -13,6 +13,7 @@ import pydicom
 import matplotlib.cm as cm
 
 def bulletproof_grad_cam_overlay(img_array, model):
+    st.write("🔥 GRAD-CAM FUNCTION STARTED!")
     """
     Bulletproof Grad-CAM that GUARANTEES visible colored heatmap
     """
@@ -976,6 +977,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
             # 2. GRAD-CAM BUTTON
             if "pneumo_model" in st.session_state and "analyzed_image" in st.session_state:
                 if st.button("🔍 Show Grad-CAM"):
+                    st.write("Button clicked!")
                     model = st.session_state["pneumo_model"]
                     proc  = preprocess_image(st.session_state["analyzed_image"])
                     cam   = bulletproof_grad_cam_overlay(proc, model)
@@ -1095,6 +1097,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
