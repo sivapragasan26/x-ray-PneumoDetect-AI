@@ -83,23 +83,22 @@ if "pneumo_model" not in st.session_state:
 
 
 def preprocess_image(image_input):
-    """
-    Preprocess image for pneumonia detection model
-    Input: PIL Image or image path
-    Output: Preprocessed numpy array ready for prediction
-    """
+    """Enhanced preprocessing with strict RGB conversion"""
     if isinstance(image_input, str):
         image = PILImage.open(image_input)
     else:
         image = image_input
     
+    # Force RGB conversion
     if image.mode != 'RGB':
         image = image.convert('RGB')
     
+    # Force exact resize
     image = image.resize((224, 224))
     img_array = np.array(image).astype(np.float32) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
     return img_array
+
 
 def interpret_prediction(prediction_score):
     """
@@ -191,32 +190,49 @@ MODEL_SPECS = {
 }
 
 def simple_attention_overlay(img_array, model):
-    """Simple attention visualization that works with any model"""
+    """Fixed attention visualization with proper shape handling"""
     try:
         # Get prediction
         pred = model.predict(img_array, verbose=0)[0][0]
         
-        # Create simple center-focused attention based on prediction confidence
+        # Create attention map - ensure exact 224x224 shape
         h, w = 224, 224
         y, x = np.ogrid[:h, :w]
-        center = h // 2, w // 2
+        center_y, center_x = h // 2, w // 2
         
-        # Distance from center with prediction weighting
-        attention = np.exp(-((x - center[1])**2 + (y - center)**2) / (w*h/8))
-        attention = attention * pred if pred > 0.5 else attention * (1-pred) * 0.3
+        # Distance-based attention pattern
+        attention = np.exp(-((x - center_x)**2 + (y - center_y)**2) / (w*h/8))
         
-        # Normalize and colorize
+        # Weight by prediction confidence
+        if pred > 0.5:
+            attention = attention * pred
+        else:
+            attention = attention * (1-pred) * 0.3
+        
+        # Normalize to 0-1 range
         attention = (attention - attention.min()) / (attention.max() - attention.min() + 1e-8)
+        
+        # Convert to RGB colormap - shape will be (224, 224, 3)
         colormap = (cm.jet(attention)[:, :, :3] * 255).astype(np.uint8)
+        
+        # Get base image - ensure shape (224, 224, 3)
         base_image = (img_array[0] * 255).astype(np.uint8)
         
-        # Strong blend for visibility
+        # Ensure both arrays have same shape before blending
+        if colormap.shape != base_image.shape:
+            st.error(f"Shape mismatch: colormap {colormap.shape} vs base {base_image.shape}")
+            return Image.fromarray(base_image)
+        
+        # Blend with strong overlay
         overlay = (0.4 * base_image + 0.6 * colormap).astype(np.uint8)
+        
         return Image.fromarray(overlay)
         
     except Exception as e:
-        st.error(f"Attention visualization error: {e}")
+        st.error(f"Attention visualization error: {str(e)}")
+        # Return original image on error
         return Image.fromarray((img_array[0] * 255).astype(np.uint8))
+
 
 
 # -----------------------------
@@ -1054,6 +1070,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
