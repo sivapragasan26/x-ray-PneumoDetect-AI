@@ -12,24 +12,37 @@ from datetime import datetime
 import pydicom
 import matplotlib.cm as cm
 
+
 def bulletproof_grad_cam_overlay(img_array, model):
+    
+
     st.write("🔥 GRAD-CAM FUNCTION STARTED!")
-
     debug_info = {}
-    """
-    Bulletproof Grad-CAM that GUARANTEES visible colored heatmap
-    """
+    
     try:
-        # Find last convolutional layer automatically
-        last_conv = "mobilenetv2_1.00_224"
-        
-        if last_conv is None:
-            raise ValueError("No convolutional layer found")
+        # Access the MobileNetV2 base model nested inside your model
+        mobilenet_base = model.get_layer('mobilenetv2_1.00_224')
 
-        # Create grad model
+        # Find last convolutional layer in mobilenet_base
+        last_conv_layer = None
+        for layer in reversed(mobilenet_base.layers):
+            if hasattr(layer, 'output_shape') and len(layer.output_shape) == 4:
+                last_conv_layer = layer
+                break
+
+        if last_conv_layer is None:
+            try:
+                last_conv_layer = mobilenet_base.get_layer('block_16_project_BN')
+            except:
+                last_conv_layer = mobilenet_base.layers[-1]
+
+        debug_info['Selected layer'] = last_conv_layer.name
+        debug_info['Layer output shape'] = str(last_conv_layer.output_shape)
+
+        # Create grad model that can access the nested conv layer
         grad_model = tf.keras.models.Model(
-            [model.inputs],
-            [model.get_layer(last_conv).output, model.output]
+            inputs=model.input,
+            outputs=[last_conv_layer.output, model.output]
         )
 
         # Compute gradients
@@ -39,60 +52,51 @@ def bulletproof_grad_cam_overlay(img_array, model):
 
         grads = tape.gradient(loss, conv_outputs)
 
+        # Store gradient debug info
         debug_info['Gradients shape'] = str(grads.shape)
         debug_info['Gradients min'] = float(tf.reduce_min(grads).numpy())
         debug_info['Gradients max'] = float(tf.reduce_max(grads).numpy())
         debug_info['Gradients mean'] = float(tf.reduce_mean(grads).numpy())
-        
-      
 
-
-        
-        # Pool gradients globally
+        # Pool gradients and create heatmap
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-        
-        # Weight the feature maps
         conv_outputs = conv_outputs[0]
         heatmap = tf.reduce_sum(tf.multiply(pooled_grads, conv_outputs), axis=-1)
-        
+
         # Apply ReLU and normalize
         heatmap = tf.nn.relu(heatmap)
         max_val = tf.reduce_max(heatmap)
         if max_val > 0:
             heatmap /= max_val
         else:
-            # Create artificial heatmap if gradients are flat
             heatmap = tf.ones_like(heatmap) * 0.5
 
-        # 🔍 ADD THESE 5 DEBUG LINES RIGHT HERE:
+        # Store heatmap debug info
         debug_info['Heatmap min'] = float(heatmap.numpy().min())
         debug_info['Heatmap max'] = float(heatmap.numpy().max())
         debug_info['Heatmap mean'] = float(tf.reduce_mean(heatmap).numpy())
         debug_info['Max val before norm'] = float(max_val.numpy())
-        
-        # SAVE DEBUG INFO TO SESSION STATE
-        st.session_state["grad_cam_debug"] = debug_info
-        
+
+        # Save all debug info to session state
+        st.session_state['grad_cam_debug'] = debug_info
+
         # Resize to match input image
         heatmap_resized = tf.image.resize(heatmap[..., tf.newaxis], (224, 224)).numpy().squeeze()
-        
+
         # Generate strong colormap (jet colormap - red/yellow/blue)
         colormap = (cm.jet(heatmap_resized)[:, :, :3] * 255).astype(np.uint8)
-        
+
         # Original image
         base_image = (img_array[0] * 255).astype(np.uint8)
-        
-        # STRONG BLEND for maximum visibility
-        overlay = (0.3 * base_image + 0.7 * colormap).astype(np.uint8)  # 70% heatmap
 
-        
-        print(f"✅ Heatmap created! Range: {heatmap_resized.min():.3f} to {heatmap_resized.max():.3f}")
-        
+        # STRONG BLEND for maximum visibility (70% heatmap, 30% original)
+        overlay = (0.3 * base_image + 0.7 * colormap).astype(np.uint8)
+
         return Image.fromarray(overlay)
-        
+
     except Exception as e:
         debug_info['ERROR'] = str(e)
-        st.session_state["grad_cam_debug"] = debug_info
+        st.session_state['grad_cam_debug'] = debug_info
         st.error(f"Grad-CAM error: {e}")
         return Image.fromarray((img_array[0] * 255).astype(np.uint8))
 
@@ -1024,6 +1028,18 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                     st.markdown('</div>', unsafe_allow_html=True)
 
 
+# 6.5 DEBUG PANEL (NEW SECTION)
+st.markdown("---")
+st.subheader("🔍 Grad-CAM Debug Panel")
+
+if "grad_cam_debug" in st.session_state:
+    debug_data = st.session_state["grad_cam_debug"]
+    for key, value in debug_data.items():
+        st.text(f"{key}: {value}")
+else:
+    st.text("Debug info will appear here after Grad-CAM runs.")
+
+st.markdown("---")
 
         
 
@@ -1107,6 +1123,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
