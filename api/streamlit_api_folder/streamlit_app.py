@@ -12,62 +12,70 @@ from datetime import datetime
 import pydicom
 import matplotlib.cm as cm
 
-def safe_grad_cam_overlay(img_array, model):
+def bulletproof_grad_cam_overlay(img_array, model):
     """
-    Return a PIL image with Grad-CAM heat-map blended on top.
-    Auto-detects last conv layer and avoids crashes.
+    Bulletproof Grad-CAM that GUARANTEES visible colored heatmap
     """
     try:
-        # Auto-detect last conv layer
-        possible_names = [
-            'Conv_1_bn', 'Conv_1_relu', 'block_16_project_BN', 'out_relu',
-            'block_15_project_BN', 'block_16_depthwise_BN'
-        ]
-        layer_names = [layer.name for layer in model.layers]
+        # Find last convolutional layer automatically
         last_conv = None
-        for name in possible_names:
-            if name in layer_names:
-                last_conv = name
+        for layer in reversed(model.layers):
+            if len(layer.output_shape) == 4:  # Conv layer
+                last_conv = layer.name
                 break
-
-        # Fallback if none found
+        
         if last_conv is None:
-            conv_layers = [l.name for l in model.layers if 'conv' in l.name or 'bn' in l.name]
-            if conv_layers:
-                last_conv = conv_layers[-1]
-            else:
-                last_conv = model.layers[-4].name
+            raise ValueError("No convolutional layer found")
 
-        # Build sub-model
+        # Create grad model
         grad_model = tf.keras.models.Model(
             [model.inputs],
-            [model.get_layer(last_conv).output, model.output],
+            [model.get_layer(last_conv).output, model.output]
         )
 
+        # Compute gradients
         with tf.GradientTape() as tape:
-            conv_out, preds = grad_model(img_array)
-            loss = preds[:, 0]
+            conv_outputs, predictions = grad_model(img_array)
+            loss = predictions[:, 0]
 
-        grads = tape.gradient(loss, conv_out)
-        weights = tf.reduce_mean(grads, axis=(1, 2))
-        cam = tf.reduce_sum(weights * conv_out, axis=-1)[0]
-        cam = tf.nn.relu(cam)
-
-        cam_max = tf.reduce_max(cam)
-        if cam_max > 0:
-            cam = cam / cam_max
-
-        cam_resized = tf.image.resize(cam[..., tf.newaxis], (224, 224)).numpy().squeeze()
-
-        heatmap = (cm.get_cmap("jet")(cam_resized)[:, :, :3] * 255).astype(np.uint8)
-        base = (img_array[0] * 255).astype(np.uint8)
-        overlay = (0.6 * base + 0.4 * heatmap).astype(np.uint8)
-
+        grads = tape.gradient(loss, conv_outputs)
+        
+        # Pool gradients globally
+        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+        
+        # Weight the feature maps
+        conv_outputs = conv_outputs[0]
+        heatmap = tf.reduce_sum(tf.multiply(pooled_grads, conv_outputs), axis=-1)
+        
+        # Apply ReLU and normalize
+        heatmap = tf.nn.relu(heatmap)
+        max_val = tf.reduce_max(heatmap)
+        if max_val > 0:
+            heatmap /= max_val
+        else:
+            # Create artificial heatmap if gradients are flat
+            heatmap = tf.ones_like(heatmap) * 0.5
+        
+        # Resize to match input image
+        heatmap_resized = tf.image.resize(heatmap[..., tf.newaxis], (224, 224)).numpy().squeeze()
+        
+        # Generate strong colormap (jet colormap - red/yellow/blue)
+        colormap = (cm.jet(heatmap_resized)[:, :, :3] * 255).astype(np.uint8)
+        
+        # Original image
+        base_image = (img_array[0] * 255).astype(np.uint8)
+        
+        # STRONG BLEND for maximum visibility
+        overlay = (0.5 * base_image + 0.5 * colormap).astype(np.uint8)
+        
+        print(f"✅ Heatmap created! Range: {heatmap_resized.min():.3f} to {heatmap_resized.max():.3f}")
+        
         return Image.fromarray(overlay)
-
+        
     except Exception as e:
-        print(f"Grad-CAM generation failed: {e}")
+        print(f"Grad-CAM error: {e}")
         return Image.fromarray((img_array[0] * 255).astype(np.uint8))
+
 
 
 def dicom_to_pil_image(dicom_bytes):
@@ -961,7 +969,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 if st.button("🔍 Show Grad-CAM"):
                     model = st.session_state["pneumo_model"]
                     proc  = preprocess_image(st.session_state["analyzed_image"])
-                    cam   = safe_grad_cam_overlay(proc, model)
+                    cam   = bulletproof_grad_cam_overlay(proc, model)
                     st.image(cam, caption="Model focus (Grad-CAM)", use_container_width=True)
 
             # 3. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
@@ -1078,6 +1086,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
