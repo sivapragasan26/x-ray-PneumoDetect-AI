@@ -10,6 +10,35 @@ import base64
 from fpdf import FPDF
 from datetime import datetime
 import pydicom
+import matplotlib.cm as cm
+
+def grad_cam_overlay(img_array, model, last_conv="Conv_1"):
+    """
+    Return a PIL image with Grad-CAM heat-map blended on top.
+    Pure TF / NumPy / Pillow – no OpenCV needed.
+    """
+    # Build sub-model
+    grad_model = tf.keras.models.Model(
+        [model.inputs],
+        [model.get_layer(last_conv).output, model.output],
+    )
+    with tf.GradientTape() as tape:
+        conv_out, preds = grad_model(img_array)
+        loss = preds[:, 0]                       # class index 0
+    grads = tape.gradient(loss, conv_out)
+    weights = tf.reduce_mean(grads, axis=(1, 2))
+    cam = tf.reduce_sum(weights * conv_out, axis=-1)[0]
+
+    cam = np.maximum(cam, 0)
+    cam /= cam.max() + 1e-8                     # 0-1
+    cam = tf.image.resize(cam[..., tf.newaxis], (224, 224)).numpy().squeeze()
+
+    # Colorize via matplotlib
+    heatmap = (cm.get_cmap("jet")(cam)[:, :, :3] * 255).astype(np.uint8)
+    base    = (img_array[0] * 255).astype(np.uint8)
+    overlay = (0.6 * base + 0.4 * heatmap).astype(np.uint8)
+
+    return Image.fromarray(overlay)
 
 
 def dicom_to_pil_image(dicom_bytes):
@@ -883,6 +912,16 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 </div>
                 """, unsafe_allow_html=True)
 
+            # --- Grad-CAM button ---
+            if st.button("🔍 Show Grad-CAM"):
+                    # reuse already-loaded model & processed image
+                    proc_img = preprocess_image(st.session_state["analyzed_image"])
+                    cam_img  = grad_cam_overlay(proc_img, model, last_conv="Conv_1")
+                    st.image(cam_img, caption="Model focus (Grad-CAM)", 
+                             use_container_width=True)
+
+
+
             # 2. PDF GENERATION SECTION - ONLY APPEARS AFTER SUCCESSFUL ANALYSIS
             pdf_col1, pdf_col2 = st.columns([1, 1])
 
@@ -993,6 +1032,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
