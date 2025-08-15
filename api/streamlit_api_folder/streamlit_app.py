@@ -885,7 +885,7 @@ if uploaded_file is not None:
 
 
 
-# Results display section
+
 # Results display section
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
     prediction_data = st.session_state["prediction_results"]
@@ -894,10 +894,8 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
     if not prediction_data["success"]:
         st.error(f"❌ Analysis failed: {prediction_data['error']}")
     else:
-        res = prediction_data["result"]
-
-        # Use native Streamlit container with border styling
         with st.container(border=True):
+            res = prediction_data["result"]
             
             # 1. DIAGNOSIS CONTAINERS
             if res["diagnosis"] == "PNEUMONIA":
@@ -1051,6 +1049,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
