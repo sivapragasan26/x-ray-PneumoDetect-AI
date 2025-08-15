@@ -1,3 +1,4 @@
+from tensorflow.keras.layers import Conv2D, DepthwiseConv2D
 import streamlit as st
 from PIL import Image
 import numpy as np
@@ -26,9 +27,11 @@ def bulletproof_grad_cam_overlay(img_array, model):
         # Find last convolutional layer in mobilenet_base
         last_conv_layer = None
         for layer in reversed(mobilenet_base.layers):
-            if hasattr(layer, 'output_shape') and len(layer.output_shape) == 4:
+            if isinstance(layer, (Conv2D, DepthwiseConv2D)):
                 last_conv_layer = layer
                 break
+
+        
 
         if last_conv_layer is None:
             try:
@@ -1123,6 +1126,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
