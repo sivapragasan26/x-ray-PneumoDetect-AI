@@ -57,11 +57,12 @@ def bulletproof_grad_cam_overlay(img_array, model):
             heatmap = tf.ones_like(heatmap) * 0.5
 
         # 🔍 ADD THESE 5 DEBUG LINES RIGHT HERE:
-        print(f"🔍 Gradients shape: {grads.shape}")
-        print(f"🔍 Gradients mean: {tf.reduce_mean(grads).numpy():.6f}")
-        print(f"🔍 Heatmap min: {heatmap.numpy().min():.6f}")
-        print(f"🔍 Heatmap max: {heatmap.numpy().max():.6f}")
-        print(f"🔍 Heatmap mean: {tf.reduce_mean(heatmap).numpy():.6f}")
+        st.write("🔍 **Grad-CAM Debug Info:**")
+        st.write(f"**Gradients shape:** {grads.shape}")
+        st.write(f"**Gradients mean:** {tf.reduce_mean(grads).numpy():.6f}")
+        st.write(f"**Heatmap min:** {heatmap.numpy().min():.6f}")
+        st.write(f"**Heatmap max:** {heatmap.numpy().max():.6f}")
+        st.write(f"**Heatmap mean:** {tf.reduce_mean(heatmap).numpy():.6f}")
         
         
         # Resize to match input image
@@ -1094,6 +1095,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
