@@ -21,7 +21,7 @@ def bulletproof_grad_cam_overlay(img_array, model):
     """
     try:
         # Find last convolutional layer automatically
-        last_conv = "block_16_project_BN"
+        last_conv = "mobilenetv2_1.00_224"
         
         if last_conv is None:
             raise ValueError("No convolutional layer found")
@@ -1107,6 +1107,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
