@@ -92,6 +92,10 @@ def load_pneumonia_model():
             if os.path.exists(model_path):
                 model = tf.keras.models.load_model(model_path, compile=False)
                 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+                # 🔥 ADD THESE 3 LINES:
+                dummy_input = tf.random.normal([1, 224, 224, 3])
+                _ = model.predict(dummy_input, verbose=0)
+                
                 return model
         except Exception:
             continue
@@ -1047,6 +1051,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
