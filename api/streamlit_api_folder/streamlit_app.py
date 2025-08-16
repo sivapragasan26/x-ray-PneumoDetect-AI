@@ -226,37 +226,65 @@ def simple_resize(array, target_shape):
     return resized
 
 def create_fallback_overlay(img_array, model):
-    """Fallback method - your original working code"""
+    """Fixed fallback method with proper error handling"""
     try:
-        pred = model.predict(img_array, verbose=0)[0]
+        # Debug and fix input shape
+        if img_array.shape != (1, 224, 224, 3):
+            st.warning(f"Fixing input shape: {img_array.shape} → (1, 224, 224, 3)")
+            # Reshape if needed
+            img_array = img_array.reshape(1, 224, 224, 3)
         
+        # Get model prediction
+        pred = model.predict(img_array, verbose=0)[0][0]
+        
+        # Create attention pattern
         h, w = 224, 224
         y, x = np.ogrid[:h, :w]
         center_y, center_x = h // 2, w // 2
         
+        # Distance-based attention pattern
         attention = np.exp(-((x - center_x)**2 + (y - center_y)**2) / (w*h/8))
         
+        # Weight by prediction confidence
         if pred > 0.5:
             attention = attention * pred
         else:
             attention = attention * (1-pred) * 0.3
         
+        # Normalize to 0-1 range
         attention = (attention - attention.min()) / (attention.max() - attention.min() + 1e-8)
-        colormap = (cm.jet(attention)[:, :, :3] * 255).astype(np.uint8)
-        base_image = (img_array * 255).astype(np.uint8)
         
+        # Convert to RGB colormap
+        colormap = (cm.jet(attention)[:, :, :3] * 255).astype(np.uint8)
+        
+        # Get base image and ensure correct shape
+        base_image = (img_array[0] * 255).astype(np.uint8)
+        if base_image.shape != (224, 224, 3):
+            base_image = base_image.reshape(224, 224, 3)
+        
+        # Ensure shapes match before blending
+        if colormap.shape != base_image.shape:
+            st.error(f"Shape mismatch: colormap {colormap.shape} vs base {base_image.shape}")
+            return Image.fromarray(base_image)
+        
+        # Blend with attention overlay
         overlay = (0.4 * base_image + 0.6 * colormap).astype(np.uint8)
+        
         return Image.fromarray(overlay)
         
     except Exception as e:
-        st.error(f"Fallback failed: {str(e)}")
-        return Image.fromarray((img_array[0] * 255).astype(np.uint8))
+        st.error(f"Fallback error: {str(e)}")
+        # Emergency fallback - just return original image
+        try:
+            original_img = (img_array[0] * 255).astype(np.uint8)
+            if original_img.shape != (224, 224, 3):
+                original_img = original_img.reshape(224, 224, 3)
+            return Image.fromarray(original_img)
+        except:
+            # Create a blank image as last resort
+            blank = np.zeros((224, 224, 3), dtype=np.uint8)
+            return Image.fromarray(blank)
 
-def simple_attention_overlay(img_array, model):
-    """Real Grad-CAM with WORKING fallback"""
-    # First try a simple approach - just use fallback for now
-    st.info("Using proven attention visualization method")
-    return create_fallback_overlay(img_array, model)
 
 
 
@@ -1153,6 +1181,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
