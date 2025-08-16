@@ -1042,15 +1042,20 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
             # 2. AI Focus BUTTON
             
             left_col, center_col, right_col = st.columns([1, 2, 1])
-
+            
             with center_col:
                 if st.button("🔍 Show AI Focus", use_container_width=True):
                     model = st.session_state["pneumo_model"]
                     proc = preprocess_image(st.session_state["analyzed_image"])
                     attention_cam = create_fallback_overlay(proc, model)
                     st.image(attention_cam, caption="Illustrative confidence visualization only.", use_container_width=True)
-        
-            
+                    
+                     # ✅ STORE BOTH IMAGES IN SESSION STATE FOR PDF
+
+
+                     st.session_state["attention_cam"] = attention_cam
+                     st.session_state["original_for_pdf"] = st.session_state["analyzed_image"]
+
 
 
 
@@ -1065,10 +1070,15 @@ with pdf_col1:
         try:
             with st.spinner("Generating Enhanced PDF..."):
                 # Images for PDF
-                original_img = st.session_state.get("original_for_pdf",
-                                                    st.session_state["analyzed_image"])
+                original_img = st.session_state.get("analyzed_image")
                 ai_focus_img = st.session_state.get("attention_cam", None)
 
+                if original_img is None:
+                    st.error("❌ No image analyzed yet. Please analyze an X-ray first.")
+                elif ai_focus_img is None:
+                    st.warning("⚠️ Click 'Show AI Focus' first to include both images in PDF.")
+                
+               
                 # Build PDF
                 pdf_data = generate_medical_pdf_report(
                     prediction_data,
@@ -1181,6 +1191,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
