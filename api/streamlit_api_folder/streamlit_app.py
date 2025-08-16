@@ -1047,7 +1047,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 if st.button("🔍 Show AI Focus", use_container_width=True):
                     model = st.session_state["pneumo_model"]
                     proc = preprocess_image(st.session_state["analyzed_image"])
-                    attention_cam = simple_attention_overlay(proc, model)
+                    attention_cam = create_fallback_overlay(proc, model)
                     st.image(attention_cam, caption="AI Attention Areas", use_container_width=True)
         
             
@@ -1181,6 +1181,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
