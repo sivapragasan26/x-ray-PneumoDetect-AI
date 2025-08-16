@@ -12,7 +12,6 @@ from fpdf import FPDF
 from datetime import datetime
 import pydicom
 import matplotlib.cm as cm
-from scipy import ndimage
 
 def create_pdf_download_link(pdf_bytes: bytes, filename: str) -> str:
     """
@@ -201,8 +200,34 @@ MODEL_SPECS = {
     "max_file_size_mb": 200
 }
 
+# Grad-CAM resize function (no scipy needed)
+def simple_resize(array, target_shape):
+    """Resize 2D array using numpy interpolation"""
+    if len(array.shape) != 2:
+        return np.zeros(target_shape)
+    
+    old_h, old_w = array.shape
+    new_h, new_w = target_shape
+    
+    # Create coordinate arrays
+    y_old = np.linspace(0, old_h - 1, old_h)
+    x_old = np.linspace(0, old_w - 1, old_w)
+    y_new = np.linspace(0, old_h - 1, new_h)
+    x_new = np.linspace(0, old_w - 1, new_w)
+    
+    # Simple interpolation
+    resized = np.zeros((new_h, new_w))
+    for i, y in enumerate(y_new):
+        for j, x in enumerate(x_new):
+            yi = int(np.clip(y, 0, old_h - 1))
+            xi = int(np.clip(x, 0, old_w - 1))
+            resized[i, j] = array[yi, xi]
+    
+    return resized
+
+
 def simple_attention_overlay(img_array, model):
-    """Real Grad-CAM visualization - shows where model actually looks"""
+    """Real Grad-CAM visualization - NO SCIPY NEEDED"""
     try:
         # Access the base MobileNetV2 model (nested inside first layer)
         base_model = model.layers[0]
@@ -219,7 +244,6 @@ def simple_attention_overlay(img_array, model):
         # Compute gradients using GradientTape
         with tf.GradientTape() as tape:
             conv_outputs, predictions = grad_model(img_array)
-            # Get the predicted class (0 for pneumonia, 1 for normal)
             pred_index = tf.argmax(predictions[0])
             class_channel = predictions[:, pred_index]
 
@@ -238,24 +262,14 @@ def simple_attention_overlay(img_array, model):
         heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
         heatmap = heatmap.numpy()
         
-        # Resize heatmap to match input image size (224x224)
-        heatmap_resized = np.zeros((224, 224))
+        # Resize heatmap using our custom function (NO SCIPY)
         if heatmap.shape != (224, 224):
-            # Simple resize using numpy
-            from scipy import ndimage
-            try:
-                heatmap_resized = ndimage.zoom(heatmap, (224/heatmap.shape[0], 224/heatmap.shape[1]), order=1)
-            except:
-                # Fallback: simple interpolation
-                heatmap_resized = np.interp(np.linspace(0, heatmap.shape-1, 224), np.arange(heatmap.shape), 
-                                          np.interp(np.linspace(0, heatmap.shape[1]-1, 224), np.arange(heatmap.shape[1]), heatmap.T).T)
+            heatmap_resized = simple_resize(heatmap, (224, 224))
         else:
             heatmap_resized = heatmap
         
         # Convert to uint8 and apply colormap
         heatmap_uint8 = np.uint8(255 * heatmap_resized)
-        
-        # Use matplotlib colormap (already imported as cm)
         colormap = (cm.jet(heatmap_uint8)[:, :, :3] * 255).astype(np.uint8)
         
         # Get base image
@@ -263,23 +277,20 @@ def simple_attention_overlay(img_array, model):
         
         # Ensure same shape
         if colormap.shape != base_image.shape:
-            st.warning(f"Shape mismatch: {colormap.shape} vs {base_image.shape} - using fallback")
-            # Fallback to your original method
+            st.info("Using fallback visualization method")
             return create_fallback_overlay(img_array, model)
         
-        # Blend images (same blending as your original)
+        # Blend images
         overlay = (0.4 * base_image + 0.6 * colormap).astype(np.uint8)
-        
         return Image.fromarray(overlay)
         
     except Exception as e:
-        st.warning(f"Grad-CAM failed: {str(e)} - using fallback method")
+        st.warning(f"Grad-CAM failed: {str(e)} - using fallback")
         return create_fallback_overlay(img_array, model)
 
 def create_fallback_overlay(img_array, model):
     """Fallback method - your original working code"""
     try:
-        # Your original working code as backup
         pred = model.predict(img_array, verbose=0)[0][0]
         
         h, w = 224, 224
@@ -303,6 +314,9 @@ def create_fallback_overlay(img_array, model):
     except Exception as e:
         st.error(f"Even fallback failed: {str(e)}")
         return Image.fromarray((img_array * 255).astype(np.uint8))
+
+
+
 
 
 
@@ -1197,6 +1211,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
