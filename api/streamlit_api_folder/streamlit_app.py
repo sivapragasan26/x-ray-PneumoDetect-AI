@@ -999,6 +999,9 @@ if uploaded_file is not None:
 
 
 # Results display section
+
+
+
 if "prediction_results" in st.session_state and st.session_state["prediction_results"] is not None:
     prediction_data = st.session_state["prediction_results"]
     elapsed = st.session_state["analysis_time"]
@@ -1009,7 +1012,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
         with st.container(border=True):
             res = prediction_data["result"]
             
-            # 1. DIAGNOSIS CONTAINERS
+            # 1. DIAGNOSIS CONTAINERS (keep existing code)
             if res["diagnosis"] == "PNEUMONIA":
                 st.markdown(f"""
                 <div style="background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3); border-radius:12px;padding:20px;margin-bottom:20px;">
@@ -1039,67 +1042,65 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                 </div>
                 """, unsafe_allow_html=True)
 
-# 2. AI Focus BUTTON
-left_col, center_col, right_col = st.columns([1, 2, 1])
-with center_col:
-    if st.button("🔍 Show AI Focus", use_container_width=True):
-         model = st.session_state["pneumo_model"]
-         proc = preprocess_image(st.session_state["analyzed_image"])
-         attention_cam = create_fallback_overlay(proc, model)
-         st.image(attention_cam, caption="Illustrative confidence visualization only.", use_container_width=True)
-         st.session_state["attention_cam"] = attention_cam
-         st.session_state["original_for_pdf"] = st.session_state["analyzed_image"]
-    
-              
-                
+            # 2. ✅ ACTION BUTTONS - ONLY AFTER DIAGNOSIS
+            st.markdown("---")  # Separator
+            
+            # Show AI Focus button
+            left_col, center_col, right_col = st.columns([1, 2, 1])
+            with center_col:
+                if st.button("🔍 Show AI Focus", use_container_width=True):
+                    model = st.session_state["pneumo_model"]
+                    proc = preprocess_image(st.session_state["analyzed_image"])
+                    attention_cam = create_fallback_overlay(proc, model)
+                    
+                    st.image(
+                        attention_cam,
+                        caption="Illustrative confidence visualization only.",
+                        use_container_width=True
+                    )
+                    
+                    # Save for PDF
+                    st.session_state["attention_cam"] = attention_cam
+                    st.session_state["original_for_pdf"] = st.session_state["analyzed_image"]
 
-# -------- PDF GENERATION SECTION (ENHANCED) --------
-pdf_col1, pdf_col2 = st.columns([1, 1])
+            # Generate PDF button
+            pdf_col1, pdf_col2 = st.columns([1, 1])
+            with pdf_col1:
+                if st.button("📄 Generate Enhanced PDF Report", 
+                             key="pdf_btn", 
+                             help="Generate comprehensive medical analysis report with images"):
+                    try:
+                        with st.spinner("Generating Enhanced PDF..."):
+                            original_img = st.session_state.get("analyzed_image")
+                            ai_focus_img = st.session_state.get("attention_cam", None)
 
-with pdf_col1:
-    if st.button("📄 Generate Enhanced PDF Report",
-                 key="pdf_btn",
-                 help="Generate comprehensive medical analysis report with images"):
+                            if original_img is None:
+                                st.error("❌ No image analyzed yet. Please analyze an X-ray first.")
+                            elif ai_focus_img is None:
+                                st.warning("⚠️ Click 'Show AI Focus' first to include both images in PDF.")
+                            else:
+                                pdf_data = generate_medical_pdf_report(
+                                    prediction_data,
+                                    elapsed,
+                                    original_image=original_img,
+                                    ai_focus_image=ai_focus_img
+                                )
 
-        try:
-            with st.spinner("Generating Enhanced PDF..."):
-                # Images for PDF
-                original_img = st.session_state.get("analyzed_image")
-                ai_focus_img = st.session_state.get("attention_cam", None)
+                                filename = f"PneumoDetect_Enhanced_Report_{int(time.time())}.pdf"
+                                download_link = create_pdf_download_link(pdf_data, filename)
 
-                if original_img is None:
-                    st.error("❌ No image analyzed yet. Please analyze an X-ray first.")
-                elif ai_focus_img is None:
-                    st.warning("⚠️ Click 'Show AI Focus' first to include both images in PDF.")
-                
-               
-                # Build PDF
-                pdf_data = generate_medical_pdf_report(
-                    prediction_data,
-                    elapsed,
-                    original_image=original_img,
-                    ai_focus_image=ai_focus_img
-                )
+                                st.session_state["pdf_generated"] = True
+                                st.session_state["pdf_download_link"] = download_link
 
-                filename = f"PneumoDetect_Enhanced_Report_{int(time.time())}.pdf"
-                download_link = create_pdf_download_link(pdf_data, filename)
+                    except Exception as e:
+                        st.error(f"❌ Failed to generate enhanced PDF: {e}")
 
-                # Save link in session state
-                st.session_state["pdf_generated"] = True
-                st.session_state["pdf_download_link"] = download_link
+            with pdf_col2:
+                if st.session_state.get("pdf_generated", False):
+                    st.markdown('<div style="text-align: right; padding-top: 8px;">', unsafe_allow_html=True)
+                    st.markdown(st.session_state["pdf_download_link"], unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
-        except Exception as e:
-            st.error(f"❌ Failed to generate enhanced PDF: {e}")
-            st.info("💡 Make sure you have generated the AI-focus overlay first.")
-
-with pdf_col2:
-    if st.session_state.get("pdf_generated", False):
-        st.markdown(
-            '<div style="text-align: right; padding-top: 8px;">',
-            unsafe_allow_html=True
-        )
-        st.markdown(st.session_state["pdf_download_link"], unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -1185,6 +1186,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
