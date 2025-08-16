@@ -1048,7 +1048,7 @@ if "prediction_results" in st.session_state and st.session_state["prediction_res
                     model = st.session_state["pneumo_model"]
                     proc = preprocess_image(st.session_state["analyzed_image"])
                     attention_cam = create_fallback_overlay(proc, model)
-                    st.image(attention_cam, caption="AI Attention Areas", use_container_width=True)
+                    st.image(attention_cam, caption="Illustrative confidence visualization only.", use_container_width=True)
         
             
 
@@ -1111,7 +1111,7 @@ st.markdown(
         <div class="disclaimer-title" style="text-align: center;">⚠️ Medical Disclaimer</div>
         <p style="text-align: center; margin: 15px auto 0 auto; line-height: 1.6;">
             This AI tool is intended for preliminary screening purposes only.<br>
-            Always seek advice from qualified healthcare professionals before making medical decisions.
+            Always seek advice from qualified healthcare professionals before making medical decisions. 
         </p>
     </div>
     """,
@@ -1181,6 +1181,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
