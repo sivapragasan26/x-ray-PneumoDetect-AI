@@ -225,96 +225,65 @@ def simple_resize(array, target_shape):
     
     return resized
 
-
 def simple_attention_overlay(img_array, model):
-    """Real Grad-CAM visualization - NO SCIPY NEEDED"""
+    """Real Grad-CAM visualization - FIXED nested model access"""
     try:
-        # Access the base MobileNetV2 model (nested inside first layer)
+        # Access the base MobileNetV2 model (first layer)
         base_model = model.layers[0]
+        last_conv_layer_name = "Conv_1"
         
-        # Get the last convolutional layer
-        last_conv_layer = base_model.get_layer("Conv_1")
+        # Get the target conv layer from base model
+        target_layer = base_model.get_layer(last_conv_layer_name)
         
-        # Create a model that outputs both conv features and final predictions
+        # Create grad model that properly connects nested layers
         grad_model = tf.keras.models.Model(
-            inputs=[model.inputs],
-            outputs=[last_conv_layer.output, model.output]
+            inputs=model.inputs,
+            outputs=[target_layer.output, model.output]
         )
 
-        # Compute gradients using GradientTape
+        # Make a dummy call to ensure the model is built
+        _ = grad_model(img_array)
+        
+        # Now compute gradients
         with tf.GradientTape() as tape:
             conv_outputs, predictions = grad_model(img_array)
             pred_index = tf.argmax(predictions[0])
             class_channel = predictions[:, pred_index]
 
-        # Get gradients of the predicted class with respect to conv layer
+        # Get gradients and compute heatmap
         grads = tape.gradient(class_channel, conv_outputs)
-        
-        # Global average pooling of gradients
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
-        # Weight the conv outputs by the gradients (importance)
-        conv_outputs = conv_outputs[0]
+        conv_outputs = conv_outputs
         heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
         heatmap = tf.squeeze(heatmap)
 
-        # Normalize heatmap between 0 and 1
+        # Normalize heatmap
         heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
         heatmap = heatmap.numpy()
         
-        # Resize heatmap using our custom function (NO SCIPY)
+        # Resize using our custom function
         if heatmap.shape != (224, 224):
             heatmap_resized = simple_resize(heatmap, (224, 224))
         else:
             heatmap_resized = heatmap
         
-        # Convert to uint8 and apply colormap
+        # Convert to colormap and blend
         heatmap_uint8 = np.uint8(255 * heatmap_resized)
         colormap = (cm.jet(heatmap_uint8)[:, :, :3] * 255).astype(np.uint8)
         
-        # Get base image
         base_image = (img_array[0] * 255).astype(np.uint8)
         
-        # Ensure same shape
         if colormap.shape != base_image.shape:
-            st.info("Using fallback visualization method")
+            st.info("Shape mismatch - using fallback")
             return create_fallback_overlay(img_array, model)
         
-        # Blend images
         overlay = (0.4 * base_image + 0.6 * colormap).astype(np.uint8)
         return Image.fromarray(overlay)
         
     except Exception as e:
         st.warning(f"Grad-CAM failed: {str(e)} - using fallback")
         return create_fallback_overlay(img_array, model)
-
-def create_fallback_overlay(img_array, model):
-    """Fallback method - your original working code"""
-    try:
-        pred = model.predict(img_array, verbose=0)[0][0]
-        
-        h, w = 224, 224
-        y, x = np.ogrid[:h, :w]
-        center_y, center_x = h // 2, w // 2
-        
-        attention = np.exp(-((x - center_x)**2 + (y - center_y)**2) / (w*h/8))
-        
-        if pred > 0.5:
-            attention = attention * pred
-        else:
-            attention = attention * (1-pred) * 0.3
-        
-        attention = (attention - attention.min()) / (attention.max() - attention.min() + 1e-8)
-        colormap = (cm.jet(attention)[:, :, :3] * 255).astype(np.uint8)
-        base_image = (img_array[0] * 255).astype(np.uint8)
-        
-        overlay = (0.4 * base_image + 0.6 * colormap).astype(np.uint8)
-        return Image.fromarray(overlay)
-        
-    except Exception as e:
-        st.error(f"Even fallback failed: {str(e)}")
-        return Image.fromarray((img_array * 255).astype(np.uint8))
-
 
 
 
@@ -1211,6 +1180,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
