@@ -1,4 +1,4 @@
-# 🏥 PneumoDetect AI - Clinical-Grade Pneumonia Detection System
+# 🏥 PneumoDetect AI - Externally Validated Pneumonia Detection System 
 
 [![Python](https://img.shields.io/badge/Python-3.11.9-blue.svg)](https://python.org)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19.0-orange.svg)](https://tensorflow.org)
@@ -289,7 +289,7 @@ chest-xray-pneumonia-detection/
 * 📊 **Data Scientists** - Model improvement and validation expansion
 
 ### **📞 Contact:**
-**Ayushi Rathour** - *Biotechnology Graduate | AI in Healthcare Researcher*
+**Ayushi Rathour** - *Biotechnology Graduate | Building AI for Healthcare*
 * **📧 Email:** [ayushirathour1804@gmail.com](mailto:ayushirathour1804@gmail.com)
 * **💼 LinkedIn:** [Ayushi Rathour](https://linkedin.com/in/ayushi-rathour)
 * **🐙 GitHub:** [@ayushirathour](https://github.com/ayushirathour)
