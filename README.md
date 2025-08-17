@@ -1,4 +1,4 @@
-# 🥽 Chest X-Ray Pneumonia Detection - Externally Validated AI System
+# 🏥 PneumoDetect AI - Clinical-Grade Pneumonia Detection System
 
 [![Python](https://img.shields.io/badge/Python-3.11.9-blue.svg)](https://python.org)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19.0-orange.svg)](https://tensorflow.org)
