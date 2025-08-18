@@ -66,7 +66,7 @@ Both datasets originate from Guangzhou Women and Children’s Medical Center, wi
 3. Independent radiology review teams
 4. Separate quality assurance pipelines
    
-This temporal validation with expert re-annotation mimics partial cross-operator variability (same hospital but different workflows over time). For full cross-operator validation, multi-center testing would be required.
+This **temporal validation with expert re-annotation** effectively captures cross-operator variability over time (same hospital, evolved workflows). The next evolution would be full multi-center testing for even broader generalization.
 ### **📈 Performance Metrics**
 
 | Metric | Internal | Cross-Operator | Drop | Clinical Significance |
