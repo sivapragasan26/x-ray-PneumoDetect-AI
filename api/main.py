@@ -1,6 +1,7 @@
 """
-FastAPI Server for Chest X-Ray Pneumonia Detection
-Professional medical imaging API with 94.8% accuracy and 0% false positives
+FastAPI Server for Pediatric Pneumonia Detection
+
+86% Cross-Operator Validation Accuracy | 96.4% Sensitivity | Clinical Grade AI
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -20,10 +21,10 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize FastAPI application
+# Initialize FastAPI with metadata
 app = FastAPI(
-    title="Chest X-Ray Pneumonia Detection API",
-    description="AI-powered pneumonia detection with 94.8% accuracy and 0% false positives",
+    title="🏥 PneumoDetectAI - Pediatric Pneumonia Detection API",
+    description="Clinical-grade AI pneumonia screening: 86% cross-operator validation accuracy, 96.4% sensitivity (485 samples)",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -33,29 +34,30 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",      # React dev server
+        "http://localhost:3000",  # React dev server
         "http://127.0.0.1:3000",
-        "https://*.vercel.app",       # Vercel deployments
-        "https://*.netlify.app",      # Netlify deployments
-        "https://*.onrender.com",     # Render deployments
+        "https://*.vercel.app",  # Vercel deployments
+        "https://*.netlify.app",  # Netlify deployments
+        "https://*.onrender.com",  # Render deployments
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Global model variables
+# Global model variable
 model = None
 model_info = {
     "loaded": False,
     "load_time": None,
     "model_path": None,
     "performance": {
-        "accuracy": 94.8,
-        "sensitivity": 89.6,
-        "specificity": 100.0,
-        "false_positive_rate": 0.0,
-        "roc_auc": 0.9879
+        "accuracy": 86.0,
+        "sensitivity": 96.4,
+        "specificity": 74.8,
+        "false_positive_rate": 25.2,
+        "roc_auc": 0.964,
+        "pr_auc": 0.968
     }
 }
 
@@ -63,15 +65,13 @@ model_info = {
 async def load_model():
     """Load the trained model on startup"""
     global model, model_info
-    
     try:
-        # Define possible model paths
+        # Define possible model paths - FIXED ORDER for HuggingFace
         model_paths = [
+            Path("../models/best_chest_xray_model.h5"),  # CORRECT path for your structure
             Path("models/best_chest_xray_model.h5"),
-            Path("../models/best_chest_xray_model.h5"),
             Path("./best_chest_xray_model.h5")
         ]
-        
         # Try to find and load the model
         for model_path in model_paths:
             if model_path.exists():
@@ -82,61 +82,44 @@ async def load_model():
                     "load_time": datetime.now().isoformat(),
                     "model_path": str(model_path)
                 })
-                logger.info("Model loaded successfully!")
+                logger.info("✅ Model loaded successfully!")
                 break
         else:
-            logger.error("Model file not found in any expected location")
-            
+            logger.error("❌ Model file not found in any expected location")
     except Exception as e:
-        logger.error(f"Failed to load model: {e}")
+        logger.error(f"❌ Failed to load model: {e}")
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
     """
-    Preprocess image for model prediction.
-    Matches the preprocessing used during training.
-    
-    Args:
-        image: PIL Image object
-        
-    Returns:
-        Preprocessed image array ready for model prediction
+    Preprocess image for model prediction
+    Matches the preprocessing used during training
     """
     try:
         # Convert to RGB if not already
         if image.mode != 'RGB':
             image = image.convert('RGB')
-        
         # Resize to model input size (224x224 for MobileNetV2)
         image = image.resize((224, 224))
-        
-        # Convert to numpy array and normalize
+        # Convert to numpy array
         img_array = np.array(image)
+        # Normalize pixel values to [0, 1] (same as training)
         img_array = img_array.astype(np.float32) / 255.0
-        
         # Add batch dimension
         img_array = np.expand_dims(img_array, axis=0)
-        
         return img_array
-        
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Image preprocessing failed: {str(e)}")
 
 def interpret_prediction(prediction_score: float) -> dict:
     """
-    Interpret model prediction with clinical confidence levels.
-    
-    Args:
-        prediction_score: Raw model output (0-1)
-        
-    Returns:
-        Dictionary containing diagnosis, confidence, and recommendation
+    Interpret model prediction with confidence levels
+    Based on cross-operator validation performance metrics
     """
-    # Model uses 0.5 as threshold (>0.5 = pneumonia, <=0.5 = normal)
+    # Your model uses 0.5 as threshold (>0.5 = pneumonia, <=0.5 = normal)
     if prediction_score > 0.5:
         diagnosis = "PNEUMONIA"
         confidence = float(prediction_score * 100)
-        
-        # Confidence levels based on model performance
+        # Confidence levels based on cross-operator validation performance
         if confidence >= 80:
             confidence_level = "High"
             recommendation = "Strong indication of pneumonia. Recommend immediate medical attention."
@@ -146,11 +129,9 @@ def interpret_prediction(prediction_score: float) -> dict:
         else:
             confidence_level = "Low"
             recommendation = "Possible pneumonia detected. Further examination advised."
-            
     else:
         diagnosis = "NORMAL"
         confidence = float((1 - prediction_score) * 100)
-        
         if confidence >= 80:
             confidence_level = "High"
             recommendation = "No signs of pneumonia detected. Chest X-ray appears normal."
@@ -160,7 +141,6 @@ def interpret_prediction(prediction_score: float) -> dict:
         else:
             confidence_level = "Low"
             recommendation = "Unclear result. Manual review by radiologist recommended."
-    
     return {
         "diagnosis": diagnosis,
         "confidence": round(confidence, 2),
@@ -170,17 +150,16 @@ def interpret_prediction(prediction_score: float) -> dict:
     }
 
 # API Routes
-
 @app.get("/")
 def read_root():
     """Root endpoint with API information"""
     return {
-        "message": "Chest X-Ray Pneumonia Detection API",
+        "message": "🏥 PneumoDetectAI pneumonia detection API",
         "status": "running",
         "model_loaded": model_info["loaded"],
         "performance": model_info["performance"],
         "version": "1.0.0",
-        "description": "AI-powered pneumonia detection with 94.8% accuracy",
+        "description": "AI-powered pneumonia detection with 86% cross-operator validation accuracy",
         "endpoints": {
             "predict": "/predict - Upload chest X-ray for analysis",
             "health": "/health - Check API health status",
@@ -191,26 +170,31 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    """Health check endpoint for monitoring"""
+    """Health check endpoint"""
     return {
         "status": "healthy" if model_info["loaded"] else "unhealthy",
         "model_loaded": model_info["loaded"],
         "load_time": model_info["load_time"],
         "timestamp": datetime.now().isoformat(),
-        "performance_summary": "94.8% accuracy, 0% false positives"
+        "performance_summary": "86% accuracy, 96.4% sensitivity, 25.2% false positive rate"
     }
 
 @app.get("/info")
 def model_info_endpoint():
-    """Detailed model information endpoint"""
+    """Detailed model information"""
     return {
         "model_info": model_info,
         "clinical_validation": {
-            "accuracy": "94.8%",
-            "sensitivity": "89.6% (catches 9/10 pneumonia cases)",
-            "specificity": "100% (never creates false alarms)",
-            "false_positive_rate": "0% (no unnecessary alerts)",
+            "accuracy": "86.0%",
+            "sensitivity": "96.4%",
+            "specificity": "74.8%",
             "clinical_readiness": "READY for clinical validation"
+        },
+        "cross_operator_validation": {
+            "dataset_size": "485 independent samples",
+            "normal_cases": "234",
+            "pneumonia_cases": "251",
+            "generalization": "Good (8.8% drop from internal validation)"
         },
         "technical_specs": {
             "architecture": "MobileNetV2 with custom classification head",
@@ -221,73 +205,62 @@ def model_info_endpoint():
         "usage_guidelines": {
             "intended_use": "Preliminary pneumonia screening assistant",
             "limitations": "Not a replacement for professional diagnosis",
-            "recommendation": "Always consult healthcare professionals"
+            "recommendation": "Always consult healthcare professionals for medical decisions"
         }
     }
 
 @app.post("/predict")
 async def predict_pneumonia(file: UploadFile = File(...)):
     """
-    Predict pneumonia from chest X-ray image.
-    
+    Predict pneumonia from chest X-ray image
     Upload a chest X-ray image to get AI-powered pneumonia detection
-    with 94.8% accuracy and 0% false positive rate.
+    with 86% cross-operator validation accuracy and 96.4% sensitivity.
     """
-    
     # Check if model is loaded
     if model is None:
         raise HTTPException(
             status_code=503,
             detail="Model not loaded. Please check server logs and restart."
         )
-    
     # Validate file type
     if not file.content_type or not file.content_type.startswith('image/'):
         raise HTTPException(
             status_code=400,
             detail="File must be an image (JPEG, PNG, etc.)"
         )
-    
     # Check file size (limit to 10MB)
     if hasattr(file, 'size') and file.size > 10 * 1024 * 1024:
         raise HTTPException(
             status_code=400,
             detail="File size too large. Maximum 10MB allowed."
         )
-    
     try:
         # Read and process image
         contents = await file.read()
         image = Image.open(io.BytesIO(contents))
-        
-        # Log image processing info
+        # Log image info
         logger.info(f"Processing image: {image.size}, mode: {image.mode}")
-        
         # Preprocess image
         processed_image = preprocess_image(image)
-        
         # Make prediction
-        prediction = model.predict(processed_image, verbose=0)[0][0]
-        
+        prediction = model.predict(processed_image, verbose=0)[0]
         # Interpret results
         result = interpret_prediction(prediction)
-        
-        # Add metadata
+        # Add metadata with cross-operator validation performance
         result.update({
             "timestamp": datetime.now().isoformat(),
             "filename": file.filename,
-            "image_size": f"{image.size[0]}x{image.size[1]}",
-            "model_performance": {
-                "accuracy": "94.8%",
-                "false_positive_rate": "0%"
+            "image_size": f"{image.size}x{image.size[1]}",
+            "cross_operator_validation_performance": {
+                "accuracy": "86.0%",
+                "sensitivity": "96.4%",
+                "specificity": "74.8%",
+                "validated_on": "485 independent samples"
             },
             "disclaimer": "This AI assistant is for preliminary screening only. Always consult healthcare professionals for medical decisions."
         })
-        
         logger.info(f"Prediction completed: {result['diagnosis']} ({result['confidence']:.1f}%)")
-        
         return JSONResponse(content=result)
-        
     except Exception as e:
         logger.error(f"Prediction error: {str(e)}")
         raise HTTPException(
@@ -297,30 +270,35 @@ async def predict_pneumonia(file: UploadFile = File(...)):
 
 @app.get("/stats")
 def get_model_stats():
-    """Get comprehensive model performance statistics"""
+    """Get model performance statistics from cross-operator validation"""
     return {
         "performance_metrics": {
-            "overall_accuracy": "94.8%",
-            "sensitivity": "89.6%",
-            "specificity": "100%",
-            "precision": "100%",
-            "false_positive_rate": "0%",
-            "false_negative_rate": "10.4%",
-            "roc_auc": "0.9879",
-            "pr_auc": "0.9905"
+            "overall_accuracy": "86.0%",
+            "sensitivity": "96.4%",
+            "specificity": "74.8%",
+            "precision": "80.4%",
+            "false_positive_rate": "25.2%",
+            "false_negative_rate": "3.6%",
+            "roc_auc": "0.964",
+            "pr_auc": "0.968"
         },
-        "confusion_matrix": {
-            "true_negatives": 135,
-            "false_positives": 0,
-            "false_negatives": 14,
-            "true_positives": 120,
-            "total_test_samples": 269
+        "cross_operator_validation_confusion_matrix": {
+            "true_negatives": 175,
+            "false_positives": 59,
+            "false_negatives": 9,
+            "true_positives": 242,
+            "total_test_samples": 485
         },
         "clinical_interpretation": {
-            "excellent_performance": "94.8% accuracy surpasses most medical AI systems",
-            "zero_false_alarms": "Perfect specificity means no unnecessary alerts",
-            "high_detection_rate": "89.6% of pneumonia cases correctly identified",
+            "excellent_screening": "96.4% sensitivity ideal for pneumonia screening",
+            "false_alarm_consideration": "25.2% false positive rate requires clinical review",
+            "high_detection_rate": "96.4% of pneumonia cases correctly identified",
             "clinical_readiness": "Ready for real-world clinical validation"
+        },
+        "validation_methodology": {
+            "type": "cross_operator_validation",
+            "dataset": "485 independent samples",
+            "generalization": "Good (8.8% drop from internal validation)"
         }
     }
 
@@ -340,11 +318,10 @@ async def internal_error_handler(request, exc):
     )
 
 if __name__ == "__main__":
-    # For local development
+    # FIXED: For local development and HuggingFace deployment
     uvicorn.run(
-        "main:app",
+        "api.main:app",  # CHANGED: Since file is in api/ folder
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 8000)),
-        reload=True
+        port=int(os.environ.get("PORT", 7860)),  # CHANGED: HuggingFace uses port 7860
+        reload=False  # CHANGED: Turn off reload for production deployment
     )
-
