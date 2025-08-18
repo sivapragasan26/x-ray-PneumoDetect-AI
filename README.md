@@ -1,3 +1,8 @@
+<p align="center">
+  <video src="https://raw.githubusercontent.com/ayushirathour/chest-xray-pneumonia-detection/main/demo/AI_Detects_Pneumonia_Saves_Childhoods.mp4" width="600" autoplay loop muted playsinline>
+  </video>
+</p>
+
 # 🥽 Pediatric Chest X-Ray Pneumonia Detection with Cross-Operator Validated AI System
 
 [![Python](https://img.shields.io/badge/Python-3.11.9-blue.svg)](https://python.org)
