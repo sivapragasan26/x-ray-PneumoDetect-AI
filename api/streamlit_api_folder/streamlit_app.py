@@ -400,6 +400,7 @@ def generate_medical_pdf_report(prediction_result, analysis_time, original_image
             pdf.ln(5)
     
     # Technical Details Section
+    pdf.add_page()
     pdf.set_font('Arial', 'B', 14)
     pdf.cell(0, 10, 'Technical Details:', 0, 1)
     pdf.set_font('Arial', '', 11)
@@ -1186,6 +1187,7 @@ st.markdown(
 
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
