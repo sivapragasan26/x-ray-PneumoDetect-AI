@@ -1,7 +1,14 @@
+<!-- Center-aligned, muted, looping MP4 clip -->
 <p align="center">
-  <video src="https://raw.githubusercontent.com/ayushirathour/chest-xray-pneumonia-detection/main/demo/AI_Detects_Pneumonia_Saves_Childhoods.mp4" width="600" autoplay loop muted playsinline>
+  <video src="demo/AI_Detects_Pneumonia_Saves_Childhoods.mp4"
+         autoplay
+         loop
+         muted
+         playsinline
+         style="max-width: 100%; height: auto;">
   </video>
 </p>
+
 
 # 🥽 Pediatric Chest X-Ray Pneumonia Detection with Cross-Operator Validated AI System
 
