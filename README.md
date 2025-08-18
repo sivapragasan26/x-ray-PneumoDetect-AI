@@ -65,6 +65,7 @@ Both datasets originate from Guangzhou Women and Children’s Medical Center, wi
 2. Time-separated acquisitions (2018 vs 2024)
 3. Independent radiology review teams
 4. Separate quality assurance pipelines
+   
 This temporal validation with expert re-annotation mimics partial cross-operator variability (same hospital but different workflows over time). For full cross-operator validation, multi-center testing would be required.
 ### **📈 Performance Metrics**
 
