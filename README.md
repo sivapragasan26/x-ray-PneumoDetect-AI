@@ -244,7 +244,7 @@ chest-xray-pneumonia-detection/
 ### **📁 Data Sources**
 **Important:** Datasets are NOT included in repository. Manual download required:
 
-* **Training Data:** [Chest X-Ray Images (Pneumonia)](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) with ~1GB dataset (pediatric patients, ages 1 to 5)
+* **Training Data:** [Chest X-Ray Images (Pneumonia)](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) with ~2GB dataset (pediatric patients, ages 1 to 5)
 * **Cross-Operator Validation:** [Pneumonia Radiography Dataset](https://www.kaggle.com/datasets/iamtanmayshukla/pneumonia-radiography-dataset) with 485 samples (pediatric patients, ages 1 to 5)
 
 ### **Key Differences Between Datasets**
