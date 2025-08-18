@@ -1,8 +1,5 @@
-<!-- centered, responsive GIF -->
 <p align="center">
-  <img src="demo/AI_Detects_Pneumonia_Saves_Childhood.gif"
-       alt="PneumoDetect AI visual demo"
-       style="max-width:100%; height:auto;" />
+  <img src="demo/AI_Detects_Pneumonia_Saves_Childhood.gif" alt="PneumoDetectAI Demo GIF" style="width: 100%; max-width: 1000px; height: auto;" />
 </p>
 
 
