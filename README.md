@@ -1,9 +1,12 @@
+
+
+
+# 🥽 Pediatric Chest X-Ray Pneumonia Detection with Cross-Operator Validated AI System
+
 <p align="center">
   <img src="demo/AI_Detects_Pneumonia_Saves_Childhoods.gif" alt="PneumoDetectAI Demo GIF" style="width: 100%; max-width: 1000px; height: auto;" />
 </p>
 
-
-# 🥽 Pediatric Chest X-Ray Pneumonia Detection with Cross-Operator Validated AI System
 
 [![Python](https://img.shields.io/badge/Python-3.11.9-blue.svg)](https://python.org)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19.0-orange.svg)](https://tensorflow.org)
