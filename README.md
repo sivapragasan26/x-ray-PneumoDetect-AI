@@ -1,11 +1,8 @@
+<!-- centered, responsive GIF -->
 <p align="center">
-  <video src="https://raw.githubusercontent.com/ayushirathour/chest-xray-pneumonia-detection/main/demo/AI_Detects_Pneumonia_Saves_Childhoods.mp4"
-         autoplay
-         loop
-         muted
-         playsinline
-         style="max-width: 100%; height: auto;">
-  </video>
+  <img src="demo/AI_Detects_Pneumonia_Saves_Childhood.gif"
+       alt="PneumoDetect AI visual demo"
+       style="max-width:100%; height:auto;" />
 </p>
 
 
