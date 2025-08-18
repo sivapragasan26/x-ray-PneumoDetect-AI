@@ -88,7 +88,7 @@ The **96.4% sensitivity** means this system catches 96 out of 100 pneumonia case
 *175 TP, 59 FP, 9 FN with percentage annotations*
 
 ![Performance Comparison](results/cross-operator_validation/4_performance_comparison.png)
-*Internal vs Cross-Operator validation showing robust generalization*
+*Comparison between internal (training) and cross-operator (time-separated validation) performance*
 
 ![Calibration Plot](results/cross-operator_validation/7_calibration_plot.png)
 *Model calibration analysis for reliable probability estimates*
