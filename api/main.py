@@ -1,5 +1,5 @@
 """
-FastAPI Server for Pediatric Pneumonia Detection
+FastAPI Server for Pediatric Chest X-Ray Pneumonia Detection
 
 86% Cross-Operator Validation Accuracy | 96.4% Sensitivity | Clinical Grade AI
 """
