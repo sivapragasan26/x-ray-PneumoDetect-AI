@@ -14,7 +14,7 @@
 [![HuggingFace](https://img.shields.io/badge/🤗_Model-Live_on_HuggingFace-yellow.svg)](https://huggingface.co/ayushirathour/chest-xray-pneumonia-detection)
 [![Validation](https://img.shields.io/badge/Cross--Operator_Validation-86%25_Accuracy-green.svg)](https://github.com/ayushirathour/chest-xray-pneumonia-detection)
 
-**Advanced Deep Learning Model with Clinical-Grade Performance & Real-World Validation**
+**Advanced Deep Learning Model with Research-Grade Performance & Real-World Validation**
 
 *Developed by **Ayushi Rathour***
 
