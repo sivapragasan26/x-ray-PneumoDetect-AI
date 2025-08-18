@@ -1,6 +1,5 @@
-<!-- Center-aligned, muted, looping MP4 clip -->
 <p align="center">
-  <video src="demo/AI_Detects_Pneumonia_Saves_Childhoods.mp4"
+  <video src="https://raw.githubusercontent.com/ayushirathour/chest-xray-pneumonia-detection/main/demo/AI_Detects_Pneumonia_Saves_Childhoods.mp4"
          autoplay
          loop
          muted
