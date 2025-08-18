@@ -4,7 +4,7 @@
 # 🥽 Pediatric Chest X-Ray Pneumonia Detection with Cross-Operator Validated AI System
 
 <p align="center">
-  <img src="demo/AI_Detects_Pneumonia_Saves_Childhoods.gif" alt="PneumoDetectAI Demo GIF" style="width: 100%; max-width: 1000px; height: auto;" />
+  <img src="demo/AI_Detects_Pneumonia_Saves_Childhoods.gif" alt="Animated demo: mother with child, AI highlight on X-ray" style="width: 100%; max-width: 1000px; height: auto;" />
 </p>
 
 
@@ -61,10 +61,10 @@ Pneumonia affects millions globally, requiring rapid and accurate diagnosis from
 | **Cross-Operator** | [Independent Dataset](https://www.kaggle.com/datasets/iamtanmayshukla/pneumonia-radiography-dataset) | 485 samples | Real-world testing |
 
 Both datasets originate from Guangzhou Women and Children’s Medical Center, with the validation set representing:
-1. Distinct patient cohorts (no overlap with training data)
-2. Time-separated acquisitions (2018 vs 2024)
-3. Independent radiology review teams
-4. Separate quality assurance pipelines
+- Distinct patient cohorts (no overlap with training data)
+- Time-separated acquisitions (2018 vs 2024)
+- Independent radiology review teams
+- Separate quality assurance pipelines
    
 This **temporal validation with expert re-annotation** effectively captures cross-operator variability over time (same hospital, evolved workflows). The next evolution would be full multi-center testing for even broader generalization.
 ### **📈 Performance Metrics**
