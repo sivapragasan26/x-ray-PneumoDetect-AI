@@ -60,8 +60,16 @@ Pneumonia affects millions globally, requiring rapid and accurate diagnosis from
 | **Internal** | [Training Dataset](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) | 269 samples | Model development |
 | **Cross-Operator** | [Independent Dataset](https://www.kaggle.com/datasets/iamtanmayshukla/pneumonia-radiography-dataset) | 485 samples | Real-world testing |
 
-While both datasets originate from Guangzhou Women and Children's Medical Center, our validation set represents distinct patient cohorts with no overlap with training data, independent radiology review teams, and separate quality control pipelines. This constitutes an independent cohort within the same institution, sometimes referred to as cross-operator validation.
+Both datasets originate from Guangzhou Women and Children’s Medical Center, with the validation set representing:
 
+Distinct patient cohorts (no overlap with training data)
+
+Time-separated acquisitions (2018 vs 2024)
+
+Independent radiology review teams
+
+Separate quality assurance pipelines
+This temporal validation with expert re-annotation mimics partial cross-operator variability (same hospital but different workflows over time). For full cross-operator validation, multi-center testing would be required.
 ### **📈 Performance Metrics**
 
 | Metric | Internal | Cross-Operator | Drop | Clinical Significance |
