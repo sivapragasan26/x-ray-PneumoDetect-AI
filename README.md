@@ -72,7 +72,7 @@ The **96.4% sensitivity** means this system catches 96 out of 100 pneumonia case
 *ROC-AUC: 0.964 showing outstanding diagnostic discrimination*
 
 ![Enhanced Confusion Matrix](results/cross-operator_validation/1_enhanced_confusion_matrix.png)
-*186 TP, 59 FP, 9 FN with percentage annotations*
+*175 TP, 59 FP, 9 FN with percentage annotations*
 
 ![Performance Comparison](results/cross-operator_validation/4_performance_comparison.png)
 *Internal vs Cross-Operator validation showing robust generalization*
@@ -153,7 +153,7 @@ python scripts/cross-operator_validation.py
 
 ## 🚀 **API for Developers**
 
-![FastAPI Demo](demo/fastapi_demo.gif)
+![FastAPI Demo](api/api_demo.gif)
 *Powerful API workflow: Send Request → Get JSON Response → Process Results*
 
 ### **🔗 Key Endpoints:**
