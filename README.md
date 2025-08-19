@@ -344,7 +344,7 @@ chest-xray-pneumonia-detection/
 }
 ```
 
-**License:** MIT (See LICENSE for complete terms)
+**License:** [MIT](LICENSE) (see LICENSE for complete terms)
 
 ***
 
