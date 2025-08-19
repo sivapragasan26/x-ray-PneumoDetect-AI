@@ -1,5 +1,5 @@
 """
-Step 4: Train MobileNetV2 model on balanced chest X-ray data (FIXED PATHS)
+ Train MobileNetV2 model on balanced chest X-ray data (FIXED PATHS)
 """
 import os
 import numpy as np
@@ -371,3 +371,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
