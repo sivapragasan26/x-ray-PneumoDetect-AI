@@ -286,6 +286,146 @@ def create_fallback_overlay(img_array, model):
             return Image.fromarray(blank)
 
 
+# -----------------------------
+# LEGAL PAGES FOR RAZORPAY COMPLIANCE
+# -----------------------------
+
+def show_privacy_policy():
+    """Display Privacy Policy page"""
+    st.markdown("## 🔒 Privacy Policy")
+    st.markdown("**Last Updated:** January 2025")
+    
+    st.markdown("""
+    ### Data Collection & Usage
+    - **Medical Images:** We process chest X-ray images solely for AI-powered pneumonia detection
+    - **Analysis Results:** We provide instant AI analysis for educational and screening purposes
+    - **No Personal Data Storage:** We do not collect or store personal information or medical records
+    
+    ### Data Security
+    - All image processing happens securely on our servers
+    - No images are stored permanently after analysis
+    - Analysis results are for preliminary screening purposes only
+    
+    ### User Rights
+    - All processing is anonymous and secure
+    - No account registration required for basic usage
+    - Contact us for any privacy concerns
+    
+    ### Contact Information
+    - **Email:** ayushirathour1804@gmail.com
+    - **Developer:** Ayushi Rathour
+    - **Response Time:** 24-48 hours
+    
+    *This AI tool respects your privacy and processes data only for analysis purposes.*
+    """)
+
+def show_terms_conditions():
+    """Display Terms & Conditions page"""
+    st.markdown("## 📋 Terms & Conditions")
+    st.markdown("**Last Updated:** January 2025")
+    
+    st.markdown("""
+    ### Service Description
+    PneumoDetect AI provides AI-powered chest X-ray analysis for preliminary pneumonia screening.
+    
+    ### Important Limitations
+    - **Not a Medical Diagnosis:** This tool is for screening purposes only
+    - **Professional Consultation Required:** Always consult qualified healthcare professionals
+    - **AI Accuracy:** Our model has 86% accuracy but is not 100% reliable
+    
+    ### Service Usage
+    - Users must be 18+ years old to use this service
+    - Provide only legitimate chest X-ray images for analysis
+    - Understand this is a screening tool, not a diagnostic device
+    
+    ### Service Availability
+    - We strive for 99% uptime but cannot guarantee continuous service
+    - Maintenance windows may temporarily affect availability
+    - Service is provided "as-is" for educational and research purposes
+    
+    ### Contact & Support
+    - **Email:** ayushirathour1804@gmail.com
+    - **Developer:** Ayushi Rathour, Biotechnology Graduate
+    """)
+
+def show_refund_policy():
+    """Display Refund Policy page"""
+    st.markdown("## 💰 Refund Policy")
+    st.markdown("**Last Updated:** January 2025")
+    
+    st.markdown("""
+    ### Current Service Status
+    **PneumoDetect AI is currently offered as a free service for research and educational purposes.**
+    
+    ### Future Paid Services
+    When we introduce paid features, our refund policy will include:
+    
+    #### Eligible for Refund:
+    - Technical failures preventing analysis completion
+    - Service unavailability for extended periods (>24 hours)
+    - Double charges due to payment processing errors
+    
+    #### Not Eligible for Refund:
+    - Successful AI analysis with delivered results
+    - User dissatisfaction with AI predictions
+    - Misunderstanding of service limitations
+    - User error in image upload
+    
+    ### Refund Process
+    - Contact us within 7 days of any payment
+    - Provide transaction details and specific reason
+    - Refunds processed within 5-7 business days
+    
+    ### Contact for Support
+    - **Email:** ayushirathour1804@gmail.com
+    - **Subject Line:** "Refund Request - [Issue Description]"
+    """)
+
+def show_contact_us():
+    """Display Contact Us page"""
+    st.markdown("## 📧 Contact Us")
+    st.markdown("**Get in touch with our development team**")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        ### 👩‍💻 Developer Information
+        **Ayushi Rathour**
+        - Biotechnology Graduate
+        - AI & Healthcare Specialist
+        - Full-Stack Developer
+        
+        ### 📬 Contact Details
+        - **Email:** ayushirathour1804@gmail.com
+        - **Response Time:** 24-48 hours
+        - **Available:** Monday-Friday, 9 AM - 6 PM IST
+        """)
+    
+    with col2:
+        st.markdown("""
+        ### 🔗 Professional Links
+        - **LinkedIn:** [linkedin.com/in/ayushirathour](https://linkedin.com/in/ayushirathour)
+        - **GitHub:** [github.com/ayushirathour](https://github.com/ayushirathour)
+        - **Email:** ayushirathour1804@gmail.com
+        
+        ### 💼 Support Categories
+        - Technical issues and bug reports
+        - General questions about the AI model
+        - Partnership and collaboration opportunities
+        - Custom AI model development
+        """)
+    
+    st.markdown("---")
+    st.markdown("""
+    ### 🎯 Common Support Topics
+    - **Technical Problems:** Upload errors, analysis failures, PDF generation
+    - **General Questions:** How to use the platform, interpretation of results
+    - **AI Model Questions:** Accuracy, limitations, methodology
+    - **Business Inquiries:** Enterprise licensing, custom solutions
+    """)
+    
+    st.info("🚀 **We're here to help!** Feel free to reach out with any questions about PneumoDetect AI.")
 
 
 
@@ -1177,7 +1317,6 @@ st.markdown(
         <div class="footer-links">
             <a href="https://github.com/ayushirathour/chest-xray-pneumonia-detection-ai" target="_blank">Source Code & Model Details</a>
             <a href="mailto:ayushirathour1804@gmail.com">Contact</a>
-            <a href="#" onclick="alert('Privacy: No data is stored. All processing is done locally.')">Privacy Policy</a>
         </div>
         <div>© 2025 {MODEL_SPECS['name']} {MODEL_SPECS['version']} | All Rights Reserved</div>
     </div>
@@ -1185,8 +1324,68 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Legal page navigation
+st.markdown("---")
+legal_col1, legal_col2, legal_col3, legal_col4 = st.columns(4)
+
+with legal_col1:
+    if st.button("Privacy Policy", key="footer_privacy"):
+        st.session_state.show_legal_page = "privacy"
+        st.rerun()
+
+with legal_col2:
+    if st.button("Terms & Conditions", key="footer_terms"):
+        st.session_state.show_legal_page = "terms"
+        st.rerun()
+
+with legal_col3:
+    if st.button("Refund Policy", key="footer_refund"):
+        st.session_state.show_legal_page = "refund"
+        st.rerun()
+
+with legal_col4:
+    if st.button("Contact Us", key="footer_contact"):
+        st.session_state.show_legal_page = "contact"
+        st.rerun()
+
+# Initialize session state
+if "show_legal_page" not in st.session_state:
+    st.session_state.show_legal_page = None
+
+# Show selected legal page
+if st.session_state.show_legal_page == "privacy":
+    st.markdown("---")
+    show_privacy_policy()
+    if st.button("← Back to Main App", use_container_width=True):
+        st.session_state.show_legal_page = None
+        st.rerun()
+    st.stop()
+elif st.session_state.show_legal_page == "terms":
+    st.markdown("---")
+    show_terms_conditions()
+    if st.button("← Back to Main App", use_container_width=True):
+        st.session_state.show_legal_page = None
+        st.rerun()
+    st.stop()
+elif st.session_state.show_legal_page == "refund":
+    st.markdown("---")
+    show_refund_policy()
+    if st.button("← Back to Main App", use_container_width=True):
+        st.session_state.show_legal_page = None
+        st.rerun()
+    st.stop()
+elif st.session_state.show_legal_page == "contact":
+    st.markdown("---")
+    show_contact_us()
+    if st.button("← Back to Main App", use_container_width=True):
+        st.session_state.show_legal_page = None
+        st.rerun()
+    st.stop()
+
+
 # Close container
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
